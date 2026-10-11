@@ -23,7 +23,7 @@ export const useEventSeats = () => {
         );
 
         if (!response.ok) {
-          console.error(`API error for ${eventId}:`, response.status);
+          console.error("API error:", eventId, response.status);
           continue;
         }
 
