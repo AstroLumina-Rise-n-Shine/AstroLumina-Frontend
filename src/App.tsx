@@ -187,13 +187,6 @@ function App() {
               </h1>
 
               <p
-                className="max-w-2xl mx-auto mb-4 text-lg italic md:text-xl text-cosmic-200/70 font-display animate-fade-in-up"
-                style={{ animationDelay: "0.3s" }}
-              >
-                by Carmen Ilie
-              </p>
-
-              <p
                 className="max-w-3xl mx-auto mb-12 text-xl leading-relaxed md:text-2xl text-cosmic-100/60 font-display animate-fade-in-up"
                 style={{ animationDelay: "0.45s" }}
               >
@@ -706,7 +699,7 @@ function App() {
         <footer className="px-6 py-8 border-t border-white/5">
           <div className="max-w-6xl mx-auto text-sm text-center text-cosmic-400">
             <p>
-              &copy; {new Date().getFullYear()} AstroLumina by Carmen Ilie.
+              &copy; {new Date().getFullYear()} AstroLumina.
               Toate drepturile rezervate.
             </p>
           </div>

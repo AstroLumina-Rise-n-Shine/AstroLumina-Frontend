@@ -42,7 +42,7 @@ const AboutMe = () => {
               Astrolog & Consultant Spiritual
             </p>
             <h1 className="mb-4 text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r font-display md:text-5xl from-white via-cosmic-100 to-cosmic-200">
-              Carmen Ilie
+              AstroLumina
             </h1>
             <blockquote className="mt-6 text-lg italic text-cosmic-300/60 font-display">
               "Călătoria este scopul, nu destinația"
