@@ -10,8 +10,9 @@ name: Promote Staging
 # head_branch is the PR *source* branch, never `main` -- a branches:[main]
 # filter would never match and promotion would silently never run. The
 # main-targeting is enforced instead by the gate on the `resolve` job.
-# The promoted version is resolved once from the git tag on the exact commit
-# the upstream run built, then shared by three parallel jobs -- one per
+# The promoted version is resolved once from the git tag on the merge commit
+# (the upstream head_sha is the PR head; the tag lives on main HEAD), then
+# shared by three parallel jobs -- one per
 # target repo, each with that repo's own checkout, bump logic, branch and
 # pull request. Merge stays manual: the branch-protection rule on main is
 # untouched, a human merges each promotion PR.
@@ -51,18 +52,14 @@ jobs:
       version: ${{ steps.ver.outputs.version }}
       promote: ${{ steps.gate.outputs.promote }}
     steps:
-      - name: Checkout app repo at the built commit
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
-
-      - name: Check the built commit merged into main
-        # The upstream pipeline runs on PR-close, so its head commit is a
-        # merge only when the PR was actually merged. Closed-but-unmerged PRs
-        # must never promote: ask the API which PRs contain this commit and
-        # require one that is merged with base main.
-        id: gate
+      - name: Find the merged PR for the built commit
+        # The upstream `head_sha` is the PR *head* commit, but the build
+        # pipeline cuts the version tag on main HEAD (the squash-merge
+        # commit) -- so the tag NEVER points at head_sha and a lookup on it
+        # always misses. Resolve the merge commit through the API and use IT
+        # for the tag lookup below. Closed-but-unmerged PRs have no merged PR
+        # here and stop the flow.
+        id: pr
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -70,19 +67,57 @@ jobs:
           pr=$(gh api "repos/${{ github.repository }}/commits/$sha/pulls" \
             --jq '[.[] | select(.merged_at != null and .base.ref == "main")][0].number // empty')
           if [ -z "$pr" ]; then
-            echo "promote=false" >> "$GITHUB_OUTPUT"
             echo "Head commit $sha is not a merge into main -- skipping promotion."
           else
-            echo "promote=true" >> "$GITHUB_OUTPUT"
-            echo "Head commit $sha merged into main via PR #$pr -- promoting."
+            merge_sha=$(gh api "repos/${{ github.repository }}/pulls/$pr" --jq '.merge_commit_sha // empty')
+            # Rebase merges have no merge commit: fall back to the head
+            # itself (only squash and merge-commit flows are supported).
+            [ -z "$merge_sha" ] && merge_sha="$sha"
+            echo "pr=$pr" >> "$GITHUB_OUTPUT"
+            echo "merge_sha=$merge_sha" >> "$GITHUB_OUTPUT"
+            echo "Head commit $sha merged into main via PR #$pr (merge commit $merge_sha)."
           fi
 
       - name: Resolve built version from git tag
+        # Backstop for docs/infra-only merges: the build pipeline cuts a tag
+        # only for application-code changes, and plain `git describe` would
+        # happily return an OLD tag for an untagged commit (re-promoting it).
+        # Require a version tag pointing EXACTLY at the merge commit.
         id: ver
         run: |
-          ver=$(git describe --tags --abbrev=0 "${{ github.event.workflow_run.head_sha }}")
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "Promoting version: $ver"
+          sha="${{ steps.pr.outputs.merge_sha }}"
+          if [ -z "$sha" ]; then
+            echo "tagged=false" >> "$GITHUB_OUTPUT"
+            echo "No merged PR resolved -- nothing to promote."
+          else
+            # No checkout of PR-controlled code anywhere in this job: tags are
+            # listed remotely instead (keeps Semgrep
+            # workflow-run-target-code-checkout quiet by construction).
+            # Peeled ^{} SHAs cover annotated tags, plain SHAs cover
+            # lightweight ones; still requires a version tag on EXACTLY the
+            # merge commit, same semantics as `git tag --points-at`.
+            ver=$(git ls-remote --tags "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+              | awk -v sha="$sha" '{ n=$2; sub(/^refs\/tags\//, "", n); sub(/\^\{\}$/, "", n); if ($1 == sha) print n }' \
+              | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1 || true)
+            if [ -z "$ver" ]; then
+              echo "tagged=false" >> "$GITHUB_OUTPUT"
+              echo "No version tag on merge commit $sha (docs/infra-only change) -- nothing to promote."
+            else
+              echo "tagged=true" >> "$GITHUB_OUTPUT"
+              echo "version=$ver" >> "$GITHUB_OUTPUT"
+              echo "Promoting version: $ver"
+            fi
+          fi
+
+      - name: Decide promotion
+        id: gate
+        run: |
+          if [ -n "${{ steps.pr.outputs.pr }}" ] && [ "${{ steps.ver.outputs.tagged }}" = "true" ]; then
+            echo "promote=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "promote=false" >> "$GITHUB_OUTPUT"
+          fi
+
 
   promote-kubernetes:
     # Reads the live color from the *-live Service (parsed as YAML), bumps
@@ -96,7 +131,7 @@ jobs:
       - name: Checkout Kubernetes repo
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: AstroLumina-by-Carmen-Ilie/AstroLumina-Kubernetes
+          repository: AstroLumina-Rise-n-Shine/AstroLumina-Kubernetes
           token: ${{ secrets.GITOPS_PAT }}
           fetch-depth: 0
 
@@ -210,7 +245,7 @@ jobs:
       - name: Checkout Helm repo
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: AstroLumina-by-Carmen-Ilie/AstroLumina-Helm
+          repository: AstroLumina-Rise-n-Shine/AstroLumina-Helm
           token: ${{ secrets.GITOPS_PAT }}
           fetch-depth: 0
 
@@ -334,7 +369,7 @@ jobs:
       - name: Checkout DockerCompose repo
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: AstroLumina-by-Carmen-Ilie/AstroLumina-DockerCompose
+          repository: AstroLumina-Rise-n-Shine/AstroLumina-DockerCompose
           token: ${{ secrets.GITOPS_PAT }}
           fetch-depth: 0
 
