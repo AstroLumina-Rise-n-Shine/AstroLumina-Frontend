@@ -48,10 +48,10 @@ const addElementDistribution = (
   elementDistribution: Record<string, number>,
 ) => {
   const elementColors: Record<string, number[]> = {
-    Aer: [220, 230, 255], // Albastru foarte deschis pentru Aer
-    Apă: [173, 216, 230], // Albastru lichid pentru Apă
-    Foc: [255, 200, 180], // Portocaliu spre roșu pentru Foc
-    Pământ: [222, 184, 135], // Maro deschis pentru Pământ
+    Aer: [220, 230, 255], // Very light blue for Air
+    Apă: [173, 216, 230], // Light sky blue for Water
+    Foc: [255, 200, 180], // Orange-red for Fire
+    Pământ: [222, 184, 135], // Light brown for Earth
   };
 
   doc.setFontSize(10);
@@ -117,8 +117,8 @@ const addTable = (
     body: data,
     theme: "grid",
     headStyles: {
-      fillColor: [220, 220, 220], // Gri deschis pentru header
-      textColor: [50, 50, 50], // Text gri închis pentru contrast
+      fillColor: [220, 220, 220], // Light gray for header
+      textColor: [50, 50, 50], // Dark gray text for contrast
       font: "NotoSans",
       fontStyle: "normal",
     },

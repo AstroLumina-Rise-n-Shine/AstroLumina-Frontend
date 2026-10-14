@@ -68,7 +68,7 @@ if (rootElement) {
                 path="/servicii/calculatorul-fazei-lunare"
                 element={<MoonPhaseCalculator />}
               />
-              {/* Astrograme */}
+              {/* Astrograms */}
               <Route
                 path="/astrograma/lumina-natala-si-karmica"
                 element={<NatalNKarmicChartBooking />}
@@ -81,7 +81,7 @@ if (rootElement) {
                 path="/astrograma/lumina-previzionala"
                 element={<PredictiveChartBooking />}
               />
-              {/* Produse */}
+              {/* Products */}
               <Route path="/produse" element={<Products />} />
               <Route
                 path="/produse/ghidul-lui-saturn-in-berbec"
@@ -91,7 +91,7 @@ if (rootElement) {
                 path="/produse/soarele-stralucirea-ta"
                 element={<SoareleStralucireaTa />}
               />
-              {/* Evenimente */}
+              {/* Events */}
               <Route path="/evenimente" element={<Events />} />
               <Route
                 path="/evenimente/rezervare/:id"
