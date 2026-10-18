@@ -54,7 +54,7 @@ jobs:
             # failed-or-empty diff would silently read as code=true.
             [ -z "$f" ] && continue
             case "$f" in
-              test/*|Dockerfile|docker-compose.yml|docker-entrypoint.sh|nginx.conf|.dockerignore|.github/*|*.md|eslint.config.js|.nvmrc|wrangler.toml) ;;
+              test/*|Dockerfile|docker-compose.yml|docker-entrypoint.sh|.dockerignore|.github/*|*.md|eslint.config.js|wrangler.toml) ;;
               *) code=true; break ;;
             esac
           done <<< "$files"
