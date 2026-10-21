@@ -13,11 +13,14 @@ RUN npm run build
 
 FROM nginx:alpine AS runner
 
-# libtiff (pulled in by libgd) ships the base image with a HIGH CVE: upgrade
-# just the affected base packages to their fixed releases. Removal is
-# impossible (libgd/nginx link them), and a full `apk upgrade` would make
-# builds non-deterministic.
-RUN apk add --no-cache --upgrade tiff expat pcre2
+# The base image ships several packages with HIGH CVEs: upgrade just the
+# affected base packages to their fixed releases. Removal is impossible
+# (libgd/nginx link them), and a full `apk upgrade` would make builds
+# non-deterministic.
+#
+# libx11: CVE-2026-88806 (heap overflow via malicious X server), fixed in
+# 1.8.14-r0.
+RUN apk add --no-cache --upgrade tiff expat pcre2 libx11
 
 RUN mkdir -p \
   /var/cache/nginx/client_temp \
