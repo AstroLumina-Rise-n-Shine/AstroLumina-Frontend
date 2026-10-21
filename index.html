@@ -104,6 +104,8 @@
           https://astrolumina-astrologyapi.onrender.com
           https://astrolumina-paymentapi.onrender.com
           https://astrolumina-bookingapi.onrender.com;
+        object-src 'none';
+        base-uri 'self';
       "
     />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -112,6 +114,7 @@
       content="strict-origin-when-cross-origin"
     />
 
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -- false positive: browsers ignore the integrity attribute when fetching rel="icon", so SRI cannot be applied to a favicon. -->
     <link
       rel="icon"
       type="image/svg+xml"
@@ -119,6 +122,7 @@
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -- false positive: rel="canonical" is metadata, no resource is fetched, so SRI does not apply. -->
     <link rel="canonical" href="https://astrolumina.ro" />
 
     <title>AstroLumina</title>

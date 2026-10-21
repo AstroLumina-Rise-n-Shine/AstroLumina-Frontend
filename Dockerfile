@@ -30,7 +30,11 @@ RUN mkdir -p \
   /var/cache/nginx/scgi_temp
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx-security-headers.conf /etc/nginx/security-headers.conf
+# The CSP in this file contains the same __PLACEHOLDER__ tokens as index.html.
+# It is copied to /var/cache/nginx (writable by the unprivileged nginx user,
+# unlike /etc/nginx) so docker-entrypoint.sh can substitute the real origins
+# at container start.
+COPY nginx-security-headers.conf /var/cache/nginx/security-headers.conf
 COPY docker-entrypoint.sh /docker-entrypoint-astrolumina.sh
 RUN chmod +x /docker-entrypoint-astrolumina.sh \
   && rm -f /etc/nginx/conf.d/default.conf
