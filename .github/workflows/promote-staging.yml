@@ -184,19 +184,111 @@ jobs:
               sys.exit(f"ERROR: expected 1 variant line for {svc}-live, found {n}")
           open(live_path, "w").write(raw.replace(segment, seg_new, 1))
 
-          # --- 3. Bump the image tag in the idle-color Deployment ---
+          # --- 3. Bump the image tag of the `frontend` container only ---
+          # The Deployment is NOT single-container: next to the app container
+          # it runs the `nginx-metrics` Prometheus exporter sidecar, and it
+          # seeds the shared html volume from an `init-frontend-html` init
+          # container. Only the app container may be re-tagged; the sidecar
+          # and the init container keep their own pinned images. (The old
+          # single-container check rejected this layout, and a relaxed global
+          # `image:` regex would have retagged the sidecar/init container.)
           dep_path = f"staging/{idle}/{svc_file}"
-          dep_txt = open(dep_path).read()
+          with open(dep_path, "rb") as f:
+              dep_bytes = f.read()
+          try:
+              dep_txt = dep_bytes.decode("utf-8")
+          except UnicodeDecodeError:
+              sys.exit(f"ERROR: {dep_path} is not valid UTF-8")
           dep = yaml.safe_load(dep_txt)
           if dep["spec"]["template"]["metadata"]["labels"].get("variant") != idle:
               sys.exit(f"ERROR: {dep_path} does not look like the {idle} variant")
-          containers = dep["spec"]["template"]["spec"]["containers"]
-          if len(containers) != 1 or ":" not in containers[0]["image"]:
-              sys.exit(f"ERROR: unexpected containers layout in {dep_path}")
-          dep_new, n = re.subn(r"(?m)^([ \t]*image: \S+:).*$", r"\g<1>" + new_tag, dep_txt)
-          if n != 1:
-              sys.exit(f"ERROR: expected 1 image line in {dep_path}, found {n}")
-          open(dep_path, "w").write(dep_new)
+          containers = dep["spec"]["template"]["spec"].get("containers") or []
+          if not containers:
+              sys.exit(f"ERROR: no containers in {dep_path}")
+          names = [c.get("name") for c in containers]
+          matches = [c for c in containers if c.get("name") == svc]
+          if len(matches) != 1:
+              sys.exit(
+                  f"ERROR: expected exactly 1 container named {svc!r} in {dep_path},"
+                  f" found {len(matches)} (containers: {names})"
+              )
+          old_image = matches[0].get("image")
+          if not isinstance(old_image, str) or not old_image:
+              sys.exit(f"ERROR: container {svc!r} in {dep_path} has no image")
+          # Only the tag is replaced: registry and repository are preserved.
+          # The tag separator must be a ':' in the LAST path segment, so a
+          # registry port (registry:5000/img) is not mistaken for a tag, and a
+          # digest-pinned image (img@sha256:...) fails instead of being
+          # silently retagged into an invalid reference.
+          last_seg = old_image.rsplit("/", 1)[-1]
+          if "@" in old_image or ":" not in last_seg:
+              sys.exit(f"ERROR: image {old_image!r} in {dep_path} has no tag separator")
+          new_image = f"{old_image.rsplit(':', 1)[0]}:{new_tag}"
+
+          # Edit the raw text instead of re-dumping YAML: comments, key order,
+          # indentation and CRLF/LF line endings must survive the bump.
+          def _split_eol(line):
+              body = line.rstrip("\r\n")
+              return body, line[len(body):]
+
+          lines = dep_txt.splitlines(keepends=True)
+          img_idx = None
+          for i, line in enumerate(lines):
+              body, _ = _split_eol(line)
+              m = re.match(
+                  r"^([ \t]*)-[ \t]+name:[ \t]*['\"]?" + re.escape(svc) + r"['\"]?[ \t]*(?:#.*)?$",
+                  body,
+              )
+              if not m:
+                  continue
+              item_indent = len(m.group(1))
+              key_indent = None
+              for j in range(i + 1, len(lines)):
+                  sub, _ = _split_eol(lines[j])
+                  if not sub.strip() or sub.lstrip().startswith("#"):
+                      continue
+                  ind = len(sub) - len(sub.lstrip(" "))
+                  is_item = sub.lstrip(" ").startswith("- ")
+                  if key_indent is None:
+                      key_indent = ind
+                  if is_item and ind <= item_indent:
+                      break  # next container in the list
+                  if not is_item and ind < key_indent:
+                      break  # left this container's mapping
+                  mi = re.match(
+                      r"^[ \t]*image:[ \t]+(\"[^\"]*\"|'[^']*'|\S+)[ \t]*(?:#.*)?$", sub
+                  )
+                  if mi and ind == key_indent:
+                      val = mi.group(1)
+                      if val[0] in "\"'" and val[-1] == val[0]:
+                          val = val[1:-1]
+                      if val != old_image:
+                          sys.exit(
+                              f"ERROR: image line of {svc!r} in {dep_path} does not match"
+                              f" the parsed image {old_image!r}"
+                          )
+                      img_idx = j
+                      break
+              if img_idx is not None:
+                  break
+          if img_idx is None:
+              sys.exit(f"ERROR: no image line found for container {svc!r} in {dep_path}")
+
+          body, eol = _split_eol(lines[img_idx])
+          m = re.match(r"^([ \t]*image:[ \t]+)(\"[^\"]*\"|'[^']*'|\S+)([ \t]*(?:#.*)?)$", body)
+          if not m:
+              sys.exit(f"ERROR: cannot rewrite image line {img_idx + 1} in {dep_path}")
+          raw_val = m.group(2)
+          quote = raw_val[0] if raw_val[0] in "\"'" else ""
+          lines[img_idx] = f"{m.group(1)}{quote}{new_image}{quote}{m.group(3)}{eol}"
+
+          # Exactly one line may change -- guards against a too-broad match.
+          orig_lines = dep_txt.splitlines(keepends=True)
+          changed = [k for k, (a, b) in enumerate(zip(orig_lines, lines)) if a != b]
+          if len(orig_lines) != len(lines) or changed != [img_idx]:
+              sys.exit(f"ERROR: expected exactly 1 changed line in {dep_path}, got {changed}")
+          with open(dep_path, "wb") as f:
+              f.write("".join(lines).encode("utf-8"))
 
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write(f"IDLE_COLOR={idle}\nNEW_TAG={new_tag}\n")
