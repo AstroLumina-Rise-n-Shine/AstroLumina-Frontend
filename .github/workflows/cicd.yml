@@ -231,6 +231,7 @@ jobs:
           retention-days: 30
 
       - name: Trivy repo scan — vuln, secrets, misconfig (blocking)
+        if: always()
         uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0, SHA-pinned (supply-chain safety)
         with:
           scan-type: fs
@@ -244,7 +245,7 @@ jobs:
 
       - name: Upload Trivy repo SARIF to code scanning
         uses: github/codeql-action/upload-sarif@d8073367669608af8fbcc5f63dd0a0d52bb90cff # v4
-        if: always()
+        if: always() && hashFiles('trivy-fs.sarif') != ''
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
