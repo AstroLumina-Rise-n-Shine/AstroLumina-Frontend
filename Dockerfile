@@ -2,7 +2,7 @@
 # AstroLumina Frontend - Dockerfile with Nginx
 # =============================================================================
 
-FROM node:24-alpine AS builder
+FROM node:24.22.1-alpine3.24 AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -11,7 +11,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine AS runner
+FROM nginx:1.30.6-alpine AS runner
 
 # The base image ships several packages with HIGH CVEs: upgrade just the
 # affected base packages to their fixed releases. Removal is impossible

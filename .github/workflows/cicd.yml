@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "24.22.1"
   SVC_NAME: frontend
   SVC_FILE: 10-frontend-deployment.yaml
   ROUTER: frontend
