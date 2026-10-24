@@ -234,6 +234,7 @@ jobs:
         if: always()
         uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0, SHA-pinned (supply-chain safety)
         with:
+          version: v0.76.1
           scan-type: fs
           scan-ref: .
           scanners: vuln,secret,misconfig
@@ -279,6 +280,7 @@ jobs:
       - name: Trivy image scan (blocking)
         uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0, SHA-pinned (supply-chain safety)
         with:
+          version: v0.76.1
           scan-type: image
           image-ref: frontend:security-scan
           scanners: vuln,misconfig,secret
