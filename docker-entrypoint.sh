@@ -1,5 +1,12 @@
 #!/bin/sh
-for file in /usr/share/nginx/html/env.js /usr/share/nginx/html/index.html; do
+# /var/cache/nginx/security-headers.conf carries the same __PLACEHOLDER__
+# tokens as index.html: the SubResource origins (ports/DNS) are deployment
+# specific, so the CSP header and the meta tag are rendered from the same
+# environment here.
+for file in \
+  /usr/share/nginx/html/env.js \
+  /usr/share/nginx/html/index.html \
+  /var/cache/nginx/security-headers.conf; do
   sed -i "s|__NODE_ENV__|${NODE_ENV}|g" "$file"
   sed -i "s|__FRONTEND_SERVER_PORT__|${FRONTEND_SERVER_PORT}|g" "$file"
   sed -i "s|__FRONTEND_SENTRY_DSN__|${FRONTEND_SENTRY_DSN}|g" "$file"

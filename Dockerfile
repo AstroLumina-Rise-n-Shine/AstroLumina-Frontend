@@ -2,7 +2,7 @@
 # AstroLumina Frontend - Dockerfile with Nginx
 # =============================================================================
 
-FROM node:24-alpine AS builder
+FROM node:24.22.1-alpine3.24 AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -11,13 +11,16 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine AS runner
+FROM nginx:1.30.6-alpine AS runner
 
-# libtiff (pulled in by libgd) ships the base image with a HIGH CVE: upgrade
-# just the affected base packages to their fixed releases. Removal is
-# impossible (libgd/nginx link them), and a full `apk upgrade` would make
-# builds non-deterministic.
-RUN apk add --no-cache --upgrade tiff expat pcre2
+# The base image ships several packages with HIGH CVEs: upgrade just the
+# affected base packages to their fixed releases. Removal is impossible
+# (libgd/nginx link them), and a full `apk upgrade` would make builds
+# non-deterministic.
+#
+# libx11: CVE-2026-88806 (heap overflow via malicious X server), fixed in
+# 1.8.14-r0.
+RUN apk add --no-cache --upgrade tiff expat pcre2 libx11
 
 RUN mkdir -p \
   /var/cache/nginx/client_temp \
@@ -27,7 +30,11 @@ RUN mkdir -p \
   /var/cache/nginx/scgi_temp
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx-security-headers.conf /etc/nginx/security-headers.conf
+# The CSP in this file contains the same __PLACEHOLDER__ tokens as index.html.
+# It is copied to /var/cache/nginx (writable by the unprivileged nginx user,
+# unlike /etc/nginx) so docker-entrypoint.sh can substitute the real origins
+# at container start.
+COPY nginx-security-headers.conf /var/cache/nginx/security-headers.conf
 COPY docker-entrypoint.sh /docker-entrypoint-astrolumina.sh
 RUN chmod +x /docker-entrypoint-astrolumina.sh \
   && rm -f /etc/nginx/conf.d/default.conf
