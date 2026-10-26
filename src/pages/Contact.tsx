@@ -68,7 +68,7 @@ const Contact = () => {
     {
       question: "Ce metode de plată acceptați?",
       answer:
-        "Accept plăți online prin card bancar (Stripe), precum și transfer bancar. Detaliile complete de plată sunt disponibile în procesul de programare.",
+        "Accept plăți online prin card bancar (Revolut Pay), precum și transfer bancar. Detaliile complete de plată sunt disponibile în procesul de programare.",
     },
     {
       question: "Cum pot reprograma sau anula o programare?",

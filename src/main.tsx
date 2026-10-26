@@ -11,7 +11,7 @@ import { env, initSentry } from "@/config";
 
 // Route-level code splitting: each page becomes a separate chunk,
 // loaded on demand. Without this, all pages + country-state-city +
-// stripe + jspdf ended up in a single ~10MB chunk.
+// revolut + jspdf ended up in a single ~10MB chunk.
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AboutMe = lazy(() => import("@/pages/AboutMe"));
 const Contact = lazy(() => import("@/pages/Contact"));

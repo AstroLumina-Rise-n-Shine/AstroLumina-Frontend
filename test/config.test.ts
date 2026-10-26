@@ -26,7 +26,7 @@ describe("frontend env config", () => {
   });
 
   it("exports secrets and keys", () => {
-    assert.equal(config.STRIPE_PK, "pk_test_dummy");
+    assert.equal(config.REVOLUT_PAY_PUBLIC_KEY, "pk_test_dummy");
     assert.equal(config.R2_BASE_URL, "https://r2.test.local");
     assert.equal(config.NODE_ENV, "development");
   });
