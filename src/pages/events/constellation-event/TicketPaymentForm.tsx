@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import RevolutPayButton from "@/components/RevolutPayButton";
+import { useState, useRef, useEffect } from "react";
+import RevolutEmbeddedCheckout from "@/components/RevolutEmbeddedCheckout";
 import { getProduct } from "@/data/products";
 import { ConstellationEvent } from "@/data/events";
 
@@ -63,7 +63,7 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
             </p>
           </div>
         ) : (
-          <RevolutPayButton
+          <RevolutEmbeddedCheckout
             amount={amount}
             currency={currency}
             orderMetadata={{

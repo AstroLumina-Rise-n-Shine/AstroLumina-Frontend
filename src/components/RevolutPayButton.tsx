@@ -11,6 +11,17 @@ interface RevolutPayButtonProps {
   className?: string;
 }
 
+interface RevolutPayInstance {
+  mount: (target: HTMLElement, options: { currency: string; totalAmount: number; createOrder: () => Promise<{ publicId: string }> }) => Promise<void>;
+  unmount: () => void;
+  on: (event: string, callback: (event: RevolutPayEvent) => void) => void;
+}
+
+interface RevolutPayEvent {
+  status: "success" | "failed" | "cancelled";
+  order?: { publicId: string };
+}
+
 /**
  * Revolut Pay button component.
  * Uses the Revolut Checkout SDK to mount a Revolut Pay button.
@@ -26,7 +37,7 @@ const RevolutPayButton: React.FC<RevolutPayButtonProps> = ({
   className,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const revolutPayRef = useRef<any>(null);
+  const revolutPayRef = useRef<RevolutPayInstance | null>(null);
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
 
@@ -75,7 +86,7 @@ const RevolutPayButton: React.FC<RevolutPayButtonProps> = ({
           createOrder,
         });
 
-        revolutPay.on("payment", (event: any) => {
+        revolutPay.on("payment", (event: RevolutPayEvent) => {
           if (event.status === "success") {
             onSuccessRef.current(event.order?.publicId || "");
           } else if (event.status === "failed" || event.status === "cancelled") {
