@@ -1,4 +1,4 @@
-import RevolutPayButton from "@/components/RevolutPayButton";
+import RevolutEmbeddedCheckout from "@/components/RevolutEmbeddedCheckout";
 import { getProduct } from "@/data/products";
 
 interface PaymentStepProps {
@@ -19,7 +19,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ onComplete }) => {
             Preț: €{(product.amount / 100).toFixed(2)}
           </p>
         </div>
-        <RevolutPayButton
+        <RevolutEmbeddedCheckout
           amount={product.amount}
           currency={product.currency}
           orderMetadata={{ product: "ghid-saturn-in-berbec" }}

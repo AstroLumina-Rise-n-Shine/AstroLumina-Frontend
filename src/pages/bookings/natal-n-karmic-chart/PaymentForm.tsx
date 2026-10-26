@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import RevolutPayButton from "@/components/RevolutPayButton";
+import RevolutEmbeddedCheckout from "@/components/RevolutEmbeddedCheckout";
 import { getProduct } from "@/data/products";
 import { AvailableSlot, PaymentFormProps } from "@/types";
 
@@ -16,7 +16,7 @@ const CheckoutForm: React.FC<{
   const product = getProduct("astrograma-natala-si-karmica")!;
 
   return (
-    <RevolutPayButton
+    <RevolutEmbeddedCheckout
       amount={product.amount}
       currency={product.currency}
       orderMetadata={{
