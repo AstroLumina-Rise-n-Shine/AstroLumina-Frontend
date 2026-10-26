@@ -4,7 +4,7 @@
 # Cloudflare Pages performs NO variable substitution on this file, so the
 # __PLACEHOLDER__ API origins of the index.html CSP cannot be templated here.
 # The policy below therefore lists the concrete production origins the SPA
-# talks to (Stripe, Sentry, R2, Cloudflare Insights, Google Fonts, the Render
+# talks to (Revolut Pay, Sentry, R2, Cloudflare Insights, Google Fonts, the Render
 # API services and this site's own subdomains). The browser enforces the
 # intersection of this header and the meta CSP in index.html, so this policy
 # must stay a superset of every origin the deployed SPA actually uses.
@@ -17,7 +17,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-XSS-Protection: 0
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://*.stripe.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://*.r2.dev; img-src 'self' data: https:; frame-src https://*.stripe.com; worker-src 'self' blob:; connect-src 'self' https://*.astrolumina.ro https://*.r2.dev https://*.stripe.com https://*.sentry.io https://astrolumina-astrologyapi.onrender.com https://astrolumina-paymentapi.onrender.com https://astrolumina-bookingapi.onrender.com; object-src 'none'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://*.revolut.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://*.r2.dev; img-src 'self' data: https:; frame-src https://*.revolut.com; worker-src 'self' blob:; connect-src 'self' https://*.astrolumina.ro https://*.r2.dev https://*.revolut.com https://*.sentry.io https://astrolumina-astrologyapi.onrender.com https://astrolumina-paymentapi.onrender.com https://astrolumina-bookingapi.onrender.com; object-src 'none'; base-uri 'self'
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin-allow-popups

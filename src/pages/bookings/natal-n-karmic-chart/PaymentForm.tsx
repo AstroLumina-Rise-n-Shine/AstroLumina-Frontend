@@ -1,70 +1,30 @@
-import React, { useCallback, useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
+import React, { useState } from "react";
+import RevolutPayButton from "@/components/RevolutPayButton";
+import { getProduct } from "@/data/products";
 import { AvailableSlot, PaymentFormProps } from "@/types";
-import { STRIPE_PK, PAYMENT_API_URL } from "@/config";
-
-const stripePromise = loadStripe(STRIPE_PK);
-
-/** Stripe client_secret is always `${resourceId}_secret_${random}` (Checkout Session `cs_…` or PaymentIntent `pi_…`). */
-function stripeIdFromClientSecret(clientSecret: string | undefined): string {
-  if (!clientSecret || typeof clientSecret !== "string") return "";
-  const i = clientSecret.indexOf("_secret_");
-  if (i === -1) return "";
-  return clientSecret.slice(0, i);
-}
 
 const CheckoutForm: React.FC<{
   setIsComplete: React.Dispatch<React.SetStateAction<boolean>>;
   selectedSlot: AvailableSlot;
   setPaymentIntentId: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ setIsComplete, selectedSlot, setPaymentIntentId }) => {
-  const handleComplete = () => setIsComplete(true);
+  const handleComplete = (orderToken: string) => {
+    setPaymentIntentId(orderToken);
+    setIsComplete(true);
+  };
 
-  const fetchClientSecret = useCallback(() => {
-    // Send slot information to payment API
-    return fetch(
-      `${PAYMENT_API_URL}/create-checkout-session/astrograma-natala-si-karmica`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          sessionType: "astrograma-natala-si-karmica",
-          selectedSlot: selectedSlot.time,
-        }),
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const fromApi =
-          (typeof data.paymentIntentId === "string" && data.paymentIntentId) ||
-          (typeof data.payment_intent === "string" && data.payment_intent) ||
-          "";
-        const fromSecret = stripeIdFromClientSecret(data.clientSecret);
-        setPaymentIntentId(fromApi || fromSecret);
-        return data.clientSecret;
-      });
-  }, [selectedSlot, setPaymentIntentId]);
-
-  const options = { fetchClientSecret };
+  const product = getProduct("astrograma-natala-si-karmica")!;
 
   return (
-    <div id="checkout">
-      <EmbeddedCheckoutProvider
-        stripe={stripePromise}
-        options={{
-          ...options,
-          onComplete: handleComplete,
-        }}
-      >
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
-    </div>
+    <RevolutPayButton
+      amount={product.amount}
+      currency={product.currency}
+      orderMetadata={{
+        sessionType: "astrograma-natala-si-karmica",
+        slot: selectedSlot.time,
+      }}
+      onSuccess={handleComplete}
+    />
   );
 };
 

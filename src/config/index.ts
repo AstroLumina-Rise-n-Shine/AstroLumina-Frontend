@@ -11,7 +11,7 @@ const envSchema = z.object({
 
   FRONTEND_SENTRY_DSN: z.string().min(1, "FRONTEND_SENTRY_DSN is required"),
 
-  STRIPE_PK: z.string().min(1, "STRIPE_PK is required"),
+  REVOLUT_PAY_PUBLIC_KEY: z.string().min(1, "REVOLUT_PAY_PUBLIC_KEY is required"),
   R2_BASE_URL: z.string().min(1, "R2_BASE_URL is required"),
 
   ASTROLOGY_API_SERVER_DC_PORT: z.coerce
@@ -160,5 +160,5 @@ export const ASTROLOGY_API_URL = env.ASTROLOGY_API_URL;
 export const PAYMENT_API_URL = env.PAYMENT_API_URL;
 export const BOOKING_API_URL = env.BOOKING_API_URL;
 
-export const STRIPE_PK = env.STRIPE_PK;
+export const REVOLUT_PAY_PUBLIC_KEY = env.REVOLUT_PAY_PUBLIC_KEY;
 export const R2_BASE_URL = env.R2_BASE_URL;

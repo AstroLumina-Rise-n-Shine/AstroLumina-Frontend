@@ -1,13 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
+import { useState, useCallback, useRef, useEffect } from "react";
+import RevolutPayButton from "@/components/RevolutPayButton";
+import { getProduct } from "@/data/products";
 import { ConstellationEvent } from "@/data/events";
-import { STRIPE_PK, PAYMENT_API_URL } from "@/config";
-
-const stripePromise = loadStripe(STRIPE_PK);
 
 interface TicketPaymentFormProps {
   event: ConstellationEvent | undefined;
@@ -35,28 +29,16 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   }, [paymentComplete, paymentIntentId, onPaymentComplete]);
 
   const eventId = event?.id || "";
-  const totalPrice = ticketCount * (event?.price || 120);
 
-  const fetchClientSecret = useCallback(() => {
-    return fetch(
-      `${PAYMENT_API_URL}/create-checkout-session/eveniment-constelatii`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionType: "eveniment-constelatii",
-          ticketCount,
-          eventId,
-        }),
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const paymentId = data.paymentIntentId || data.payment_intent || "";
-        setPaymentIntentId(paymentId);
-        return data.clientSecret;
-      });
-  }, [ticketCount, eventId]);
+  // Get price per ticket from catalog (7000 cents = €70)
+  const product = getProduct("eveniment-constelatii")!;
+  const amount = product.amount * ticketCount;
+  const currency = product.currency;
+
+  const handleSuccess = (orderToken: string) => {
+    setPaymentIntentId(orderToken);
+    setPaymentComplete(true);
+  };
 
   return (
     <div>
@@ -64,10 +46,10 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
         <div className="pb-4 mb-4 border-b border-white/10">
           <p className="text-sm text-cosmic-200">
             <span className="font-semibold">Plată pentru:</span> {ticketCount}{" "}
-            bilet(e) x {event?.price || 120} €
+            bilet(e) x {event?.price || 70} €
           </p>
           <p className="mt-2 text-lg font-bold text-gold-400">
-            Total: {totalPrice} €
+            Total: {(amount / 100).toFixed(2)} €
           </p>
         </div>
 
@@ -81,17 +63,16 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
             </p>
           </div>
         ) : (
-          <div id="checkout">
-            <EmbeddedCheckoutProvider
-              stripe={stripePromise}
-              options={{
-                fetchClientSecret,
-                onComplete: () => setPaymentComplete(true),
-              }}
-            >
-              <EmbeddedCheckout />
-            </EmbeddedCheckoutProvider>
-          </div>
+          <RevolutPayButton
+            amount={amount}
+            currency={currency}
+            orderMetadata={{
+              sessionType: "eveniment-constelatii",
+              ticketCount: String(ticketCount),
+              eventId,
+            }}
+            onSuccess={handleSuccess}
+          />
         )}
       </div>
       <button

@@ -318,7 +318,7 @@ jobs:
       FRONTEND_SERVER_PORT: "3103"
       # Dummy frontend values — only placeholder substitution; no secret use.
       FRONTEND_SENTRY_DSN: https://00000000000000000000000000000000@o0.ingest.sentry.io/0
-      STRIPE_PK: pk_test_dummy_key_for_ci_scan_only
+      REVOLUT_PAY_PUBLIC_KEY: pk_test_dummy_key_for_ci_scan_only
       R2_BASE_URL: https://ci.local
       ASTROLOGY_API_SERVER_DC_PORT: "3101"
       ASTROLOGY_API_SERVER_DC_DNS: ci.local
@@ -361,7 +361,7 @@ jobs:
             -e NODE_ENV="${NODE_ENV}" \
             -e FRONTEND_SERVER_PORT="${FRONTEND_SERVER_PORT}" \
             -e FRONTEND_SENTRY_DSN="${FRONTEND_SENTRY_DSN}" \
-            -e STRIPE_PK="${STRIPE_PK}" \
+            -e REVOLUT_PAY_PUBLIC_KEY="${REVOLUT_PAY_PUBLIC_KEY}" \
             -e R2_BASE_URL="${R2_BASE_URL}" \
             -e ASTROLOGY_API_SERVER_DC_PORT="${ASTROLOGY_API_SERVER_DC_PORT}" \
             -e ASTROLOGY_API_SERVER_DC_DNS="${ASTROLOGY_API_SERVER_DC_DNS}" \
