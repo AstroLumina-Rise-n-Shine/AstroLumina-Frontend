@@ -41,7 +41,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isComplete) {
+    if (isComplete && paymentIntentId) {
       onNext(paymentIntentId);
     }
   };
@@ -62,7 +62,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             })}
           </p>
         </div>
-        {existingPaymentIntentId ? (
+        {isComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
               <span className="text-2xl text-emerald-400">✓</span>

@@ -126,10 +126,10 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
   return (
     <div
       ref={containerRef}
-      className={className}
+      className={`${className} bg-white rounded-xl p-4 shadow-lg`}
       style={{
         margin: "1rem 0",
-        minHeight: "300px", // Ensure space for the embedded checkout
+        minHeight: "300px",
       }}
     />
   );
