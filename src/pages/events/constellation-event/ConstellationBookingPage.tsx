@@ -63,7 +63,6 @@ const ConstellationBookingPage: React.FC = () => {
               setPaymentIntentId(paymentId);
               setCurrentStep(3);
             }}
-            onPaymentSuccess={() => setCurrentStep(3)}
             onBack={handleBack}
           />
         );

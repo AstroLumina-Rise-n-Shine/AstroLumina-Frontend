@@ -7,7 +7,6 @@ interface TicketPaymentFormProps {
   event: ConstellationEvent | undefined;
   ticketCount: number;
   onPaymentComplete: (paymentIntentId: string) => void;
-  onPaymentSuccess?: (paymentIntentId: string) => void;
   onBack: () => void;
 }
 
@@ -15,7 +14,6 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   event,
   ticketCount,
   onPaymentComplete,
-  onPaymentSuccess,
   onBack,
 }) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
@@ -42,7 +40,6 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
     setPaymentIntentId(orderToken);
     setPaymentComplete(true);
     onPaymentComplete(orderToken);
-    onPaymentSuccess?.(orderToken);
   };
 
   const handleError = (err: Error) => {
