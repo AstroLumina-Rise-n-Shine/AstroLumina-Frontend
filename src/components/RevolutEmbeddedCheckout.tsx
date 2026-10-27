@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { REVOLUT_PAY_PUBLIC_KEY, PAYMENT_API_URL } from "@/config";
+import { REVOLUT_PAY_PUBLIC_KEY, REVOLUT_PAY_MODE, PAYMENT_API_URL } from "@/config";
 
 interface RevolutEmbeddedCheckoutProps {
   amount: number;              // in minor currency units (cents)
@@ -83,7 +83,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
         if (!mounted || !containerRef.current) return;
 
         const checkout = await RevolutEmbeddedCheckoutLoader({
-          mode: "prod",
+          mode: REVOLUT_PAY_MODE,
           publicToken: REVOLUT_PAY_PUBLIC_KEY,
           locale,
           target: containerRef.current,
