@@ -40,7 +40,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onNext,
   onBack,
 }) => {
-  const [isComplete, setIsComplete] = useState(!!existingPaymentIntentId);
+  const [isComplete, setIsComplete] = useState(existingPaymentIntentId !== "");
   const [paymentIntentId, setPaymentIntentId] = useState<string>(
     existingPaymentIntentId || "",
   );

@@ -80,7 +80,7 @@ const NatalNKarmicChartBookingPage = () => {
         return (
           <PaymentForm
             selectedSlot={selectedSlot!}
-            existingPaymentIntentId={paymentIntentId!}
+            existingPaymentIntentId={paymentIntentId}
             onNext={(intentId) => {
               setPaymentIntentId(intentId);
               setCurrentStep(6);
@@ -96,7 +96,7 @@ const NatalNKarmicChartBookingPage = () => {
             contactInfo={contactInfo!}
             bookingQuestions={bookingQuestions!}
             selectedSlot={selectedSlot!}
-            paymentIntentId={paymentIntentId!}
+            paymentIntentId={paymentIntentId}
             onBack={handleBack}
             onComplete={() => navigate("/")}
           />
