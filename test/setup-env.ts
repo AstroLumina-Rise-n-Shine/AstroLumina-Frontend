@@ -9,7 +9,7 @@ export const DUMMY_ENV: Record<string, string> = {
 
   FRONTEND_SERVER_PORT: "80",
   FRONTEND_SENTRY_DSN: "https://abc123@o0.ingest.sentry.io/0",
-  STRIPE_PK: "pk_test_dummy",
+  REVOLUT_PAY_PUBLIC_KEY: "pk_test_dummy",
   R2_BASE_URL: "https://r2.test.local",
 
   ASTROLOGY_API_SERVER_DC_PORT: "3031",

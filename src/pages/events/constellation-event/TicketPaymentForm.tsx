@@ -1,13 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
+import { useState, useRef, useEffect } from "react";
+import RevolutEmbeddedCheckout from "@/components/RevolutEmbeddedCheckout";
+import { getProduct } from "@/data/products";
 import { ConstellationEvent } from "@/data/events";
-import { STRIPE_PK, PAYMENT_API_URL } from "@/config";
-
-const stripePromise = loadStripe(STRIPE_PK);
 
 interface TicketPaymentFormProps {
   event: ConstellationEvent | undefined;
@@ -23,6 +17,7 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   onBack,
 }) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const hasNavigatedRef = useRef(false);
 
@@ -35,28 +30,21 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   }, [paymentComplete, paymentIntentId, onPaymentComplete]);
 
   const eventId = event?.id || "";
-  const totalPrice = ticketCount * (event?.price || 120);
 
-  const fetchClientSecret = useCallback(() => {
-    return fetch(
-      `${PAYMENT_API_URL}/create-checkout-session/eveniment-constelatii`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionType: "eveniment-constelatii",
-          ticketCount,
-          eventId,
-        }),
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const paymentId = data.paymentIntentId || data.payment_intent || "";
-        setPaymentIntentId(paymentId);
-        return data.clientSecret;
-      });
-  }, [ticketCount, eventId]);
+  // Get price per ticket from catalog (7000 cents = €70)
+  const product = getProduct("eveniment-constelatii")!;
+  const amount = product.amount * ticketCount;
+  const currency = product.currency;
+
+  const handleSuccess = (orderToken: string) => {
+    setPaymentIntentId(orderToken);
+    setPaymentComplete(true);
+    onPaymentComplete(orderToken);
+  };
+
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
+  };
 
   return (
     <div>
@@ -64,14 +52,27 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
         <div className="pb-4 mb-4 border-b border-white/10">
           <p className="text-sm text-cosmic-200">
             <span className="font-semibold">Plată pentru:</span> {ticketCount}{" "}
-            bilet(e) x {event?.price || 120} €
+            bilet(e) x {event?.price || 70} €
           </p>
           <p className="mt-2 text-lg font-bold text-gold-400">
-            Total: {totalPrice} €
+            Total: {(amount / 100).toFixed(2)} €
           </p>
         </div>
 
-        {paymentComplete ? (
+        {paymentError ? (
+          <div className="py-8 text-center">
+            <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+              {paymentError}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
+            >
+              Reîncarcă pagina
+            </button>
+          </div>
+        ) : paymentComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
               <span className="text-2xl text-emerald-400">✓</span>
@@ -81,22 +82,22 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
             </p>
           </div>
         ) : (
-          <div id="checkout">
-            <EmbeddedCheckoutProvider
-              stripe={stripePromise}
-              options={{
-                fetchClientSecret,
-                onComplete: () => setPaymentComplete(true),
-              }}
-            >
-              <EmbeddedCheckout />
-            </EmbeddedCheckoutProvider>
-          </div>
+          <RevolutEmbeddedCheckout
+            amount={amount}
+            currency={currency}
+            orderMetadata={{
+              sessionType: "eveniment-constelatii",
+              ticketCount: String(ticketCount),
+              eventId,
+            }}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
         )}
       </div>
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => { setPaymentError(""); onBack(); }}
         className="w-full px-6 py-3 font-semibold transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
       >
         Înapoi

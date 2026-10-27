@@ -109,12 +109,13 @@ const SynastryChartBookingPage = () => {
         return (
           <PaymentForm
             selectedSlot={selectedSlot!}
-            existingPaymentIntentId={paymentIntentId!}
+            existingPaymentIntentId={paymentIntentId}
             onNext={(intentId) => {
               setPaymentIntentId(intentId);
               setCurrentStep(7);
             }}
             onBack={handleBack}
+            onPaymentSuccess={(intentId) => setPaymentIntentId(intentId)}
           />
         );
       case 7:

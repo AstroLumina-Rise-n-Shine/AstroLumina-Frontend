@@ -20,7 +20,8 @@ FROM nginx:1.30.6-alpine AS runner
 #
 # libx11: CVE-2026-88806 (heap overflow via malicious X server), fixed in
 # 1.8.14-r0. brotli-libs: CVE-2026-111497, fixed in 1.2.1-r0.
-RUN apk add --no-cache --upgrade tiff expat pcre2 libx11 brotli-libs
+# curl: CVE-2026-92392 (HTTP/2 upload Use-After-Free), fixed in 8.23.0-r0.
+RUN apk add --no-cache --upgrade tiff expat pcre2 libx11 brotli-libs curl
 
 RUN mkdir -p \
   /var/cache/nginx/client_temp \

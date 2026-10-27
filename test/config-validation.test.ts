@@ -9,7 +9,7 @@ import { DUMMY_ENV } from "./setup-env.js";
 describe("frontend env validation", () => {
   it("throws when a required variable is missing", async () => {
     const incomplete = Object.fromEntries(
-      Object.entries(DUMMY_ENV).filter(([key]) => key !== "STRIPE_PK"),
+      Object.entries(DUMMY_ENV).filter(([key]) => key !== "REVOLUT_PAY_PUBLIC_KEY"),
     );
     (globalThis as { window?: unknown }).window = { ENV: incomplete };
     await assert.rejects(

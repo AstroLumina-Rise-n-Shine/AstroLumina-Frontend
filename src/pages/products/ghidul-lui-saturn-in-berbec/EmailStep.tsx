@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { sendGhidulSaturnEmail } from "@/utils/email";
 
 interface EmailStepProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
@@ -124,14 +124,6 @@ const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
         ) : (
           "Trimite-mi ghidul"
         )}
-      </button>
-
-      <button
-        type="button"
-        onClick={onBack}
-        className="w-full px-6 py-3 font-semibold transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
-      >
-        Înapoi
       </button>
     </div>
   );

@@ -10,7 +10,7 @@ for file in \
   sed -i "s|__NODE_ENV__|${NODE_ENV}|g" "$file"
   sed -i "s|__FRONTEND_SERVER_PORT__|${FRONTEND_SERVER_PORT}|g" "$file"
   sed -i "s|__FRONTEND_SENTRY_DSN__|${FRONTEND_SENTRY_DSN}|g" "$file"
-  sed -i "s|__STRIPE_PK__|${STRIPE_PK}|g" "$file"
+  sed -i "s|__REVOLUT_PAY_PUBLIC_KEY__|${REVOLUT_PAY_PUBLIC_KEY}|g" "$file"
   sed -i "s|__R2_BASE_URL__|${R2_BASE_URL}|g" "$file"
   sed -i "s|__ASTROLOGY_API_SERVER_DC_PORT__|${ASTROLOGY_API_SERVER_DC_PORT}|g" "$file"
   sed -i "s|__ASTROLOGY_API_SERVER_DC_DNS__|${ASTROLOGY_API_SERVER_DC_DNS}|g" "$file"
