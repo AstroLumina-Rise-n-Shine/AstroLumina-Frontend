@@ -103,7 +103,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       <div className="flex gap-4">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => { setPaymentError(""); onBack(); }}
           className="flex-1 px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
         >
           Pasul anterior
