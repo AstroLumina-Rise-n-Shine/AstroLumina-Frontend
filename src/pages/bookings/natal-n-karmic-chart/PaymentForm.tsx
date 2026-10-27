@@ -41,7 +41,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isComplete) {
+    if (isComplete && paymentIntentId) {
       onNext(paymentIntentId);
     }
   };
