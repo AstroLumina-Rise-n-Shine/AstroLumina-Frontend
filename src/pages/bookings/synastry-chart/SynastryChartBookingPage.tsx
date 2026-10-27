@@ -115,6 +115,7 @@ const SynastryChartBookingPage = () => {
               setCurrentStep(7);
             }}
             onBack={handleBack}
+            onPaymentSuccess={(intentId) => setPaymentIntentId(intentId)}
           />
         );
       case 7:

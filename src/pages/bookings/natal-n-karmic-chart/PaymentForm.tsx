@@ -8,10 +8,12 @@ const CheckoutForm: React.FC<{
   setPaymentError: React.Dispatch<React.SetStateAction<string>>;
   selectedSlot: AvailableSlot;
   setPaymentIntentId: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ setIsComplete, setPaymentError, selectedSlot, setPaymentIntentId }) => {
+  onPaymentSuccess?: (paymentIntentId: string) => void;
+}> = ({ setIsComplete, setPaymentError, selectedSlot, setPaymentIntentId, onPaymentSuccess }) => {
   const handleComplete = (orderToken: string) => {
     setPaymentIntentId(orderToken);
     setIsComplete(true);
+    onPaymentSuccess?.(orderToken);
   };
 
   const handleError = (err: Error) => {
@@ -39,6 +41,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   existingPaymentIntentId,
   onNext,
   onBack,
+  onPaymentSuccess,
 }) => {
   const [isComplete, setIsComplete] = useState(existingPaymentIntentId !== "");
   const [paymentIntentId, setPaymentIntentId] = useState<string>(
@@ -97,6 +100,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             setPaymentError={setPaymentError}
             selectedSlot={selectedSlot}
             setPaymentIntentId={setPaymentIntentId}
+            onPaymentSuccess={onPaymentSuccess}
           />
         )}
       </div>

@@ -324,6 +324,7 @@ export interface PaymentFormProps {
   existingPaymentIntentId?: string;
   onNext: (paymentIntentId: string) => void;
   onBack: () => void;
+  onPaymentSuccess?: (paymentIntentId: string) => void;
 }
 
 export interface OnePersonConfirmationStepProps {

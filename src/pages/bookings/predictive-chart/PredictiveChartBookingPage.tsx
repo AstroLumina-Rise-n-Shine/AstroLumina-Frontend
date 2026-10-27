@@ -86,6 +86,7 @@ const PredictiveChartBookingPage = () => {
               setCurrentStep(6);
             }}
             onBack={handleBack}
+            onPaymentSuccess={(intentId) => setPaymentIntentId(intentId)}
           />
         );
       case 6:
@@ -96,7 +97,7 @@ const PredictiveChartBookingPage = () => {
             contactInfo={contactInfo!}
             bookingQuestions={bookingQuestions!}
             selectedSlot={selectedSlot!}
-            paymentIntentId={paymentIntentId!}
+            paymentIntentId={paymentIntentId}
             onBack={handleBack}
             onComplete={() => navigate("/")}
           />

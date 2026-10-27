@@ -86,6 +86,7 @@ const NatalNKarmicChartBookingPage = () => {
               setCurrentStep(6);
             }}
             onBack={handleBack}
+            onPaymentSuccess={(intentId) => setPaymentIntentId(intentId)}
           />
         );
       case 6:
