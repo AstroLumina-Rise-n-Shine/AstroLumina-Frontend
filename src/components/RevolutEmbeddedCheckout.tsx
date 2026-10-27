@@ -20,6 +20,7 @@ interface CheckoutInstance {
 
 interface RevolutCheckoutError {
   message?: string;
+  type?: string;
 }
 
 /**
@@ -92,7 +93,24 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
             onSuccessRef.current(payload.orderId);
           },
           onError: (payload: { error: RevolutCheckoutError; orderId: string }) => {
-            onErrorRef.current?.(new Error(payload.error?.message || "Payment failed"));
+            const msg = payload.error?.message || "Payment failed";
+            // Map specific Revolut error types to Romanian messages
+            const type = payload.error?.type || "";
+            if (type === "error.invalid-postcode") {
+              onErrorRef.current?.(
+                new Error(
+                  "Codul poștal este obligatoriu. Te rugăm să completezi câmpul cod poștal.",
+                ),
+              );
+            } else {
+              onErrorRef.current?.(
+                new Error(
+                  msg.includes("Postcode")
+                    ? "Codul poștal este obligatoriu. Te rugăm să completezi câmpul cod poștal."
+                    : "Plata a eșuat. Te rugăm să verifici datele și să încerci din nou.",
+                ),
+              );
+            }
           },
           onCancel: () => {
             onCancelRef.current?.();
