@@ -17,6 +17,7 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   onBack,
 }) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const hasNavigatedRef = useRef(false);
 
@@ -40,6 +41,10 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
     setPaymentComplete(true);
   };
 
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
+  };
+
   return (
     <div>
       <div className="p-4 mb-6 border rounded-xl bg-white/5 border-white/10">
@@ -53,6 +58,11 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
           </p>
         </div>
 
+        {paymentError && (
+          <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+            {paymentError}
+          </div>
+        )}
         {paymentComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
@@ -72,6 +82,7 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
               eventId,
             }}
             onSuccess={handleSuccess}
+            onError={handleError}
           />
         )}
       </div>

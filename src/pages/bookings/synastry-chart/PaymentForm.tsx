@@ -5,12 +5,17 @@ import { AvailableSlot, PaymentFormProps } from "@/types";
 
 const CheckoutForm: React.FC<{
   setIsComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  setPaymentError: React.Dispatch<React.SetStateAction<string>>;
   selectedSlot: AvailableSlot;
   setPaymentIntentId: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ setIsComplete, selectedSlot, setPaymentIntentId }) => {
+}> = ({ setIsComplete, setPaymentError, selectedSlot, setPaymentIntentId }) => {
   const handleComplete = (orderToken: string) => {
     setPaymentIntentId(orderToken);
     setIsComplete(true);
+  };
+
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
   };
 
   const product = getProduct("astrograma-relationala")!;
@@ -24,6 +29,7 @@ const CheckoutForm: React.FC<{
         slot: selectedSlot.time,
       }}
       onSuccess={handleComplete}
+      onError={handleError}
     />
   );
 };
@@ -38,6 +44,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const [paymentIntentId, setPaymentIntentId] = useState<string>(
     existingPaymentIntentId || "",
   );
+  const [paymentError, setPaymentError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +69,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             })}
           </p>
         </div>
+        {paymentError && (
+          <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+            {paymentError}
+          </div>
+        )}
         {isComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
@@ -74,6 +86,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         ) : (
           <CheckoutForm
             setIsComplete={setIsComplete}
+            setPaymentError={setPaymentError}
             selectedSlot={selectedSlot}
             setPaymentIntentId={setPaymentIntentId}
           />

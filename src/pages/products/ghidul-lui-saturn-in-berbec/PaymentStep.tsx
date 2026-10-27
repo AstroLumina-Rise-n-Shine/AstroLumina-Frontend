@@ -1,3 +1,4 @@
+import { useState } from "react";
 import RevolutEmbeddedCheckout from "@/components/RevolutEmbeddedCheckout";
 import { getProduct } from "@/data/products";
 
@@ -6,7 +7,12 @@ interface PaymentStepProps {
 }
 
 const PaymentStep: React.FC<PaymentStepProps> = ({ onComplete }) => {
+  const [paymentError, setPaymentError] = useState("");
   const product = getProduct("ghid-saturn-in-berbec")!;
+
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
+  };
 
   return (
     <div id="checkout">
@@ -19,11 +25,17 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ onComplete }) => {
             Preț: €{(product.amount / 100).toFixed(2)}
           </p>
         </div>
+        {paymentError && (
+          <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+            {paymentError}
+          </div>
+        )}
         <RevolutEmbeddedCheckout
           amount={product.amount}
           currency={product.currency}
           orderMetadata={{ product: "ghid-saturn-in-berbec" }}
           onSuccess={onComplete}
+          onError={handleError}
         />
       </div>
     </div>
