@@ -27,7 +27,9 @@
         default-src 'self';
         script-src 'self' 'unsafe-inline' 
           https://*.revolut.com
-          https://static.cloudflareinsights.com;
+          https://static.cloudflareinsights.com
+          https://pay.google.com
+          https://www.gstatic.com;
         style-src 'self' 'unsafe-inline' 
           https://fonts.googleapis.com;
         font-src 'self' 
@@ -35,12 +37,15 @@
           https://*.r2.dev;
         img-src 'self' data: https:;
         frame-src 
-          https://*.revolut.com;
+          https://*.revolut.com
+          https://pay.google.com;
         worker-src 'self' blob:;
         connect-src 'self'
           https://*.r2.dev
           https://*.revolut.com
           https://*.sentry.io
+          https://pay.google.com
+          https://payments.google.com
           http://localhost:__ASTROLOGY_API_SERVER_DC_PORT__
           https://localhost:__ASTROLOGY_API_SERVER_DC_PORT__
           http://192.168.122.10:__ASTROLOGY_API_SERVER_DC_PORT__
