@@ -12,6 +12,7 @@ interface RevolutEmbeddedCheckoutProps {
   className?: string;
   locale?: string;
   customerEmail?: string;
+  billingCountryCode?: string; // ISO country code to pre-select (e.g. "RO")
 }
 
 interface CheckoutInstance {
@@ -40,6 +41,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
   className,
   locale = "ro",
   customerEmail,
+  billingCountryCode = "RO",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const checkoutRef = useRef<CheckoutInstance | null>(null);
@@ -160,6 +162,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
             onCancelRef.current?.();
           },
           email: customerEmail,
+          billingAddress: billingCountryCode ? { countryCode: billingCountryCode } : undefined,
         });
 
         checkoutRef.current = checkout;
@@ -183,7 +186,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, currency, createOrderUrl, JSON.stringify(orderMetadata), locale, customerEmail]);
+  }, [amount, currency, createOrderUrl, JSON.stringify(orderMetadata), locale, customerEmail, billingCountryCode]);
 
   return (
     <div
