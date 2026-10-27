@@ -58,12 +58,20 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
           </p>
         </div>
 
-        {paymentError && (
-          <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
-            {paymentError}
+        {paymentError ? (
+          <div className="py-8 text-center">
+            <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+              {paymentError}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
+            >
+              Reîncarcă pagina
+            </button>
           </div>
-        )}
-        {paymentComplete ? (
+        ) : paymentComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
               <span className="text-2xl text-emerald-400">✓</span>
