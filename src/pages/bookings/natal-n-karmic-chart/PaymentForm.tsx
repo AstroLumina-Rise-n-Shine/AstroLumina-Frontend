@@ -5,12 +5,19 @@ import { AvailableSlot, PaymentFormProps } from "@/types";
 
 const CheckoutForm: React.FC<{
   setIsComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  setPaymentError: React.Dispatch<React.SetStateAction<string>>;
   selectedSlot: AvailableSlot;
   setPaymentIntentId: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ setIsComplete, selectedSlot, setPaymentIntentId }) => {
+  onPaymentSuccess?: (paymentIntentId: string) => void;
+}> = ({ setIsComplete, setPaymentError, selectedSlot, setPaymentIntentId, onPaymentSuccess }) => {
   const handleComplete = (orderToken: string) => {
     setPaymentIntentId(orderToken);
     setIsComplete(true);
+    onPaymentSuccess?.(orderToken);
+  };
+
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
   };
 
   const product = getProduct("astrograma-natala-si-karmica")!;
@@ -24,6 +31,7 @@ const CheckoutForm: React.FC<{
         slot: selectedSlot.time,
       }}
       onSuccess={handleComplete}
+      onError={handleError}
     />
   );
 };
@@ -33,15 +41,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   existingPaymentIntentId,
   onNext,
   onBack,
+  onPaymentSuccess,
 }) => {
-  const [isComplete, setIsComplete] = useState(!!existingPaymentIntentId);
+  const [isComplete, setIsComplete] = useState(existingPaymentIntentId !== "");
   const [paymentIntentId, setPaymentIntentId] = useState<string>(
     existingPaymentIntentId || "",
   );
+  const [paymentError, setPaymentError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isComplete) {
+    if (isComplete && paymentIntentId) {
       onNext(paymentIntentId);
     }
   };
@@ -62,7 +72,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             })}
           </p>
         </div>
-        {existingPaymentIntentId ? (
+        {paymentError ? (
+          <div className="py-8 text-center">
+            <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+              {paymentError}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
+            >
+              Reîncarcă pagina
+            </button>
+          </div>
+        ) : isComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
               <span className="text-2xl text-emerald-400">✓</span>
@@ -74,15 +97,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         ) : (
           <CheckoutForm
             setIsComplete={setIsComplete}
+            setPaymentError={setPaymentError}
             selectedSlot={selectedSlot}
             setPaymentIntentId={setPaymentIntentId}
+            onPaymentSuccess={onPaymentSuccess}
           />
         )}
       </div>
       <div className="flex gap-4">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => { setPaymentError(""); onBack(); }}
           className="flex-1 px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
         >
           Pasul anterior

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { REVOLUT_PAY_PUBLIC_KEY, PAYMENT_API_URL } from "@/config";
+import { REVOLUT_PAY_PUBLIC_KEY, REVOLUT_PAY_MODE, PAYMENT_API_URL } from "@/config";
 
 interface RevolutEmbeddedCheckoutProps {
   amount: number;              // in minor currency units (cents)
@@ -20,6 +20,7 @@ interface CheckoutInstance {
 
 interface RevolutCheckoutError {
   message?: string;
+  type?: string;
 }
 
 /**
@@ -83,7 +84,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
         if (!mounted || !containerRef.current) return;
 
         const checkout = await RevolutEmbeddedCheckoutLoader({
-          mode: "prod",
+          mode: REVOLUT_PAY_MODE,
           publicToken: REVOLUT_PAY_PUBLIC_KEY,
           locale,
           target: containerRef.current,
@@ -92,7 +93,68 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
             onSuccessRef.current(payload.orderId);
           },
           onError: (payload: { error: RevolutCheckoutError; orderId: string }) => {
-            onErrorRef.current?.(new Error(payload.error?.message || "Payment failed"));
+            const msg = payload.error?.message || "";
+            const type = payload.error?.type || "";
+            const lowerMsg = msg.toLowerCase();
+            const lowerType = type.toLowerCase();
+
+            // Map Revolut decline reasons to Romanian messages
+            let romanianMsg = "";
+            if (
+              type === "error.invalid-postcode" ||
+              lowerMsg.includes("postcode") ||
+              lowerMsg.includes("cod poștal")
+            ) {
+              romanianMsg =
+                "Codul poștal este obligatoriu. Te rugăm să completezi câmpul cod poștal.";
+            } else if (
+              type === "error.insufficient_funds" ||
+              lowerMsg.includes("insufficient") ||
+              lowerMsg.includes("fonduri")
+            ) {
+              romanianMsg =
+                "Cardul nu are fonduri suficiente. Te rugăm să folosești un alt card.";
+            } else if (
+              type === "error.expired_card" ||
+              lowerMsg.includes("expired") ||
+              lowerMsg.includes("expirat")
+            ) {
+              romanianMsg =
+                "Cardul a expirat. Te rugăm să folosești un card valabil.";
+            } else if (
+              type === "error.do_not_honour" ||
+              lowerMsg.includes("do not honour") ||
+              lowerMsg.includes("nu poate fi onorat")
+            ) {
+              romanianMsg =
+                "Plata a fost refuzată de bancă. Te rugăm să verifici cu emitentul cardului.";
+            } else if (
+              type === "error.customer_challenge_failed" ||
+              lowerMsg.includes("challenge") ||
+              lowerMsg.includes("verificare")
+            ) {
+              romanianMsg =
+                "Verificarea de securitate a eșuat. Te rugăm să încerci din nou.";
+            } else if (
+              type === "error.3ds_failed" ||
+              lowerMsg.includes("3d") ||
+              lowerMsg.includes("3ds") ||
+              lowerMsg.includes("strong customer")
+            ) {
+              romanianMsg =
+                "Autentificarea 3D Secure a eșuat. Te rugăm să încerci cu un alt card.";
+            } else if (
+              type === "error.declined" ||
+              lowerMsg.includes("declined") ||
+              lowerMsg.includes("refuzat")
+            ) {
+              romanianMsg =
+                "Plata a fost refuzată. Te rugăm să verifici datele cardului.";
+            } else {
+              romanianMsg = "Plata a eșuat. Te rugăm să verifici datele și să încerci din nou.";
+            }
+
+            onErrorRef.current?.(new Error(romanianMsg));
           },
           onCancel: () => {
             onCancelRef.current?.();
@@ -126,10 +188,10 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
   return (
     <div
       ref={containerRef}
-      className={className}
+      className={`${className} bg-white rounded-xl p-4 shadow-lg`}
       style={{
         margin: "1rem 0",
-        minHeight: "300px", // Ensure space for the embedded checkout
+        minHeight: "300px",
       }}
     />
   );

@@ -17,6 +17,7 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   onBack,
 }) => {
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const hasNavigatedRef = useRef(false);
 
@@ -38,6 +39,11 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
   const handleSuccess = (orderToken: string) => {
     setPaymentIntentId(orderToken);
     setPaymentComplete(true);
+    onPaymentComplete(orderToken);
+  };
+
+  const handleError = (err: Error) => {
+    setPaymentError(err.message || "Plata a eșuat. Te rugăm să încerci din nou.");
   };
 
   return (
@@ -53,7 +59,20 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
           </p>
         </div>
 
-        {paymentComplete ? (
+        {paymentError ? (
+          <div className="py-8 text-center">
+            <div className="mb-4 p-3 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20">
+              {paymentError}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
+            >
+              Reîncarcă pagina
+            </button>
+          </div>
+        ) : paymentComplete ? (
           <div className="py-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-emerald-500/20">
               <span className="text-2xl text-emerald-400">✓</span>
@@ -72,12 +91,13 @@ const TicketPaymentForm: React.FC<TicketPaymentFormProps> = ({
               eventId,
             }}
             onSuccess={handleSuccess}
+            onError={handleError}
           />
         )}
       </div>
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => { setPaymentError(""); onBack(); }}
         className="w-full px-6 py-3 font-semibold transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
       >
         Înapoi
