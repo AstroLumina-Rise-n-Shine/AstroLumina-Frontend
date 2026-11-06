@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/navbar/Navbar";
-import ScrollToTopButton from "@/components/scroll/ScrollToTopButton";
+
 import { useLoading } from "@/hooks/useLoading";
 import { CONSTELLATION_EVENTS } from "@/data/events";
 import {
@@ -53,16 +53,6 @@ function App() {
 
     return () => observerRef.current?.disconnect();
   }, [visibleSections]);
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    }
-  };
 
   const services = [
     {
@@ -196,30 +186,7 @@ function App() {
                 </span>
               </p>
 
-              <div
-                className="flex justify-center animate-fade-in-up"
-                style={{ animationDelay: "0.6s" }}
-              >
-                <button
-                  onClick={() => scrollToSection("services")}
-                  className="p-3 cursor-pointer group"
-                  aria-label="Scroll to explore"
-                >
-                  <svg
-                    className="w-6 h-6 transition-colors duration-300 text-white/40 group-hover:text-white/60 animate-scroll-arrow"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                    />
-                  </svg>
-                </button>
-              </div>
+
             </div>
           </div>
 
@@ -705,7 +672,6 @@ function App() {
           </div>
         </footer>
 
-        <ScrollToTopButton />
       </main>
     </div>
   );

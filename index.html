@@ -29,16 +29,21 @@
           https://*.revolut.com
           https://static.cloudflareinsights.com
           https://pay.google.com
-          https://www.gstatic.com;
+          https://www.gstatic.com
+          https://cdn.botpress.cloud
+          https://files.bpcontent.cloud;
         style-src 'self' 'unsafe-inline' 
           https://fonts.googleapis.com;
         font-src 'self' 
           https://fonts.gstatic.com 
           https://*.r2.dev;
         img-src 'self' data: https:;
+        media-src 'self' data: blob:;
         frame-src 
           https://*.revolut.com
-          https://pay.google.com;
+          https://pay.google.com
+          https://cdn.botpress.cloud
+          https://files.bpcontent.cloud;
         worker-src 'self' blob:;
         connect-src 'self'
           https://*.r2.dev
@@ -108,7 +113,10 @@
           https://__BOOKING_API_SERVER_K8S_DNS__:__BOOKING_API_SERVER_K8S_PORT__
           https://astrolumina-astrologyapi.onrender.com
           https://astrolumina-paymentapi.onrender.com
-          https://astrolumina-bookingapi.onrender.com;
+          https://astrolumina-bookingapi.onrender.com
+          https://cdn.botpress.cloud
+          https://files.bpcontent.cloud
+          https://webchat.botpress.cloud;
         object-src 'none';
         base-uri 'self';
       "
@@ -136,5 +144,7 @@
     <div id="root"></div>
     <script src="/env.js"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/11/06/07/20261106073258-8IZ1644O.js" defer></script>
   </body>
 </html>
