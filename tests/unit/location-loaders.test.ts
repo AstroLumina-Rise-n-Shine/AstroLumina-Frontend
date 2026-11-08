@@ -1,7 +1,10 @@
+// Test setup - configure window.ENV before other imports
+import "./setup-env.js";
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { loadCities, loadStates } from "../src/utils/location-data.js";
-import { Country } from "../src/utils/location-data.js";
+import { loadCities, loadStates } from "@/utils/location-data.js";
+import { Country } from "@/utils/location-data.js";
 
 describe("Country helpers", () => {
   it("returns undefined for an unknown code", () => {

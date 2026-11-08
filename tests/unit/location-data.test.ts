@@ -2,7 +2,7 @@
 // data, city data, and loader caching.
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { Country, loadCities, loadStates } from "../src/utils/location-data.js";
+import { Country, loadCities, loadStates } from "@/utils/location-data.js";
 
 describe("Country", () => {
   it("lists Romania among all countries", () => {

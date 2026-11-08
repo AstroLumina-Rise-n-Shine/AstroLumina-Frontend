@@ -1,5 +1,7 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { REVOLUT_PAY_PUBLIC_KEY, REVOLUT_PAY_MODE, PAYMENT_API_URL } from "@/config";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RevolutEmbeddedCheckoutProps {
   amount: number;              // in minor currency units (cents)
@@ -46,6 +48,8 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
   const onCancelRef = useRef(onCancel);
+  const [isLoading, setIsLoading] = useState(true);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   // Keep refs updated with latest callbacks
   useEffect(() => {
@@ -154,6 +158,7 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
               romanianMsg = "Plata a eșuat. Te rugăm să verifici datele și să încerci din nou.";
             }
 
+            setCheckoutError(romanianMsg);
             onErrorRef.current?.(new Error(romanianMsg));
           },
           onCancel: () => {
@@ -163,8 +168,12 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
         });
 
         checkoutRef.current = checkout;
+        setIsLoading(false);
+        setCheckoutError(null);
       } catch (err) {
         if (mounted) {
+          setCheckoutError(err instanceof Error ? err.message : "Eroare neașteptată");
+          setIsLoading(false);
           onErrorRef.current?.(err as Error);
         }
       }
@@ -185,15 +194,41 @@ const RevolutEmbeddedCheckout: React.FC<RevolutEmbeddedCheckoutProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, currency, createOrderUrl, JSON.stringify(orderMetadata), locale, customerEmail]);
 
+  if (checkoutError) {
+    return (
+      <div
+        className={cn(
+          "p-6 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-200",
+          className
+        )}
+        role="alert"
+      >
+        <div className="flex items-center gap-3">
+          <span className="w-5 h-5 text-red-400">⚠</span>
+          <span>{checkoutError}</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
-      className={`${className} bg-white rounded-xl p-4 shadow-lg`}
-      style={{
-        margin: "1rem 0",
-        minHeight: "300px",
-      }}
-    />
+      className={cn(
+        "relative min-h-[300px] rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm",
+        className
+      )}
+      style={{ margin: "1rem 0" }}
+    >
+      {isLoading && !checkoutError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white/5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 animate-pulse">
+            <Loader2 className="w-5 h-5 text-cosmic-500" />
+            <span className="text-cosmic-300/80 text-sm font-medium">Se initializează plata...</span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

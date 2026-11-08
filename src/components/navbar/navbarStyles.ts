@@ -1,12 +1,12 @@
 export const getNavbarStyles = () => {
   return {
     navClasses:
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-luxury bg-midnight-950/80 backdrop-blur-2xl border-b border-white/5 hover:bg-midnight-950/90",
+      "fixed top-4 left-[50%] -translate-x-[50%] z-50 w-full max-w-[92%] transition-all duration-500 ease-luxury bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-cosmic hover:border-white/20 hover:shadow-lg hover:-translate-y-1",
     linkClasses:
-      "relative text-cosmic-200 hover:text-white px-5 py-2.5 rounded-lg text-base font-medium transition-all duration-400 ease-luxury cursor-pointer group overflow-hidden",
+      "relative text-cosmic-200 hover:text-white px-5 py-2.5 rounded-xl text-base font-medium transition-all duration-400 ease-luxury cursor-pointer group overflow-hidden",
     mobileLinkClasses:
-      "text-cosmic-200 hover:text-white block px-5 py-3 rounded-lg text-lg font-medium transition-all duration-400 ease-luxury cursor-pointer",
+      "text-cosmic-200 hover:text-white block px-5 py-3 rounded-xl text-lg font-medium transition-all duration-400 ease-luxury cursor-pointer",
     logoClasses:
-      "font-display text-xl font-bold text-white hover:text-gold-400 transition-all duration-400 ease-luxury cursor-pointer",
+      "font-display text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white via-cosmic-300 to-gold-400 hover:text-white transition-all duration-500 ease-luxury cursor-pointer",
   };
 };

@@ -119,9 +119,9 @@ const Services = () => {
 
         <div className="relative z-10 max-w-6xl px-6 mx-auto">
           <div className="mb-20 text-center">
-            <h1 className="mb-5 text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white font-display md:text-5xl via-cosmic-100 to-cosmic-200">
+            <h2 className="mb-5 text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white font-display md:text-5xl via-cosmic-100 to-cosmic-200">
               Servicii Astrologice
-            </h1>
+            </h2>
             <p className="max-w-2xl mx-auto text-lg text-cosmic-300/70">
               Descoperă gama completă de servicii disponibile
             </p>
@@ -139,9 +139,9 @@ const Services = () => {
                       <div className="flex items-center justify-center transition-all duration-500 w-14 h-14 bg-linear-to-br rounded-2xl from-cosmic-500/30 to-gold-500/20 text-cosmic-400 group-hover:scale-110">
                         {service.icon}
                       </div>
-                      <h2 className="text-2xl font-bold text-white transition-colors font-display group-hover:text-gold-300 duration-400">
-                        {service.title}
-                      </h2>
+                      <Link to={service.link} className="text-2xl font-bold text-white transition-colors font-display group-hover:text-gold-300 duration-400">
+                        <h2>{service.title}</h2>
+                      </Link>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="flex items-center gap-2 text-base text-cosmic-300/70">

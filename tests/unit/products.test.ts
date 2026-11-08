@@ -1,3 +1,6 @@
+// Test setup - configure window.ENV before other imports
+import "./setup-env.js";
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -5,7 +8,7 @@ import {
   getProduct,
   getAvailableProducts,
   getProductKeys,
-} from "../src/data/products.js";
+} from "@/data/products.js";
 
 describe("productCatalog", () => {
   it("contains exactly 6 products", () => {

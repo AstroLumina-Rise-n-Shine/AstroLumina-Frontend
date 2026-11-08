@@ -1,6 +1,9 @@
+// Test setup - configure window.ENV before other imports
+import "./setup-env.js";
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { CONSTELLATION_EVENTS } from "../src/data/events.js";
+import { CONSTELLATION_EVENTS } from "@/data/events.js";
 
 describe("CONSTELLATION_EVENTS", () => {
   it("is a non-empty array", () => {

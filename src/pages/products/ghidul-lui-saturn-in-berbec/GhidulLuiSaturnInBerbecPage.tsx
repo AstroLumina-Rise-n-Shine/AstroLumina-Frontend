@@ -43,6 +43,9 @@ const GhidulLuiSaturnInBerbecPage = () => {
                 <h2 className="mb-6 text-3xl font-bold text-white font-display">
                   Ghidul lui Saturn în Berbec
                 </h2>
+                <div className="mb-4 text-xl font-semibold text-gold-400">
+                  €15.00
+                </div>
                 <div className="mb-8 space-y-4 leading-relaxed text-cosmic-200/80">
                   <p>
                     Saturn în Berbec este o poziție astrologică unică care aduce

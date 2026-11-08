@@ -1,3 +1,6 @@
+// Test setup - configure window.ENV before other imports
+import "./setup-env.js";
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import Country from "country-state-city/lib/country.js";
