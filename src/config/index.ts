@@ -107,14 +107,42 @@ export async function initSentry(dsn: string | undefined, environment: string) {
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
+        // Full session replay for Sentry (free tier: 5k/month)
         maskAllText: false,
         blockAllMedia: false,
+        maskAllInputs: false,
       }),
     ],
     tracesSampleRate: environment === "production" ? 0.1 : 1.0,
-    replaysSessionSampleRate: 0.1,
+    profilesSampleRate: environment === "production" ? 0.1 : 1.0,
+    // Session Replay - Sentry free tier: 5k sessions/month
+    replaysSessionSampleRate: environment === "production" ? 0.05 : 0.1,
     replaysOnErrorSampleRate: 1.0,
+    beforeSend(event) {
+      // Don't send events in development
+      if (environment === "development") return null;
+      return event;
+    },
   });
+
+  // Auto-identify user from localStorage if authenticated
+  if (typeof window !== "undefined") {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        Sentry.setUser({
+          id: user.id,
+          email: user.email,
+          username: user.name,
+          plan: user.plan,
+          role: user.role,
+        });
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+  }
 }
 
 function parseAndValidateEnv(): EnvConfig {

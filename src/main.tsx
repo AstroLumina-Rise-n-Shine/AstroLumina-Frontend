@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import * as Sentry from "@sentry/react";
+
 import App from "@/App";
 import "./styles/starry-theme.css";
 import "./styles/astronomy-fonts.css";
@@ -8,6 +10,9 @@ import "flatpickr/dist/themes/material_blue.css";
 import { LoadingProvider } from "@/contexts/LoadingContext";
 import RouteFallback from "@/components/RouteFallback";
 import { env, initSentry } from "@/config";
+
+// Initialize Sentry - Error Tracking + Performance + Session Replay + Profiling
+void initSentry(env.FRONTEND_SENTRY_DSN, env.NODE_ENV);
 
 // Route-level code splitting: each page becomes a separate chunk,
 // loaded on demand. Without this, all pages + country-state-city +
@@ -45,64 +50,83 @@ const ConstellationEvent = lazy(
 
 const rootElement = document.getElementById("root");
 
-void initSentry(env.FRONTEND_SENTRY_DSN, env.NODE_ENV);
-
 if (rootElement) {
   const root = createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <LoadingProvider>
-        <Router>
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/despre-mine" element={<AboutMe />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/servicii" element={<Services />} />
-              {/* Calculators */}
-              <Route
-                path="/servicii/calculatorul-astral"
-                element={<AstralCalculator />}
-              />
-              <Route
-                path="/servicii/calculatorul-fazei-lunare"
-                element={<MoonPhaseCalculator />}
-              />
-              {/* Astrograms */}
-              <Route
-                path="/astrograma/lumina-natala-si-karmica"
-                element={<NatalNKarmicChartBooking />}
-              />
-              <Route
-                path="/astrograma/lumina-relationala"
-                element={<SynastryChartBooking />}
-              />
-              <Route
-                path="/astrograma/lumina-previzionala"
-                element={<PredictiveChartBooking />}
-              />
-              {/* Products */}
-              <Route path="/produse" element={<Products />} />
-              <Route
-                path="/produse/ghidul-lui-saturn-in-berbec"
-                element={<GhidulLuiSaturnInBerbec />}
-              />
-              <Route
-                path="/produse/soarele-stralucirea-ta"
-                element={<SoareleStralucireaTa />}
-              />
-              {/* Events */}
-              <Route path="/evenimente" element={<Events />} />
-              <Route
-                path="/evenimente/rezervare/:id"
-                element={<ConstellationEvent />}
-              />
-              {/*  */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </Router>
-      </LoadingProvider>
+      <Sentry.ErrorBoundary
+        fallback={(error, resetErrorBoundary) => (
+          <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="text-center max-w-md">
+              <h1 className="text-2xl font-bold text-cosmic-100 mb-4">
+                Ceva nu a funcționat corect
+              </h1>
+              <p className="text-cosmic-300/70 mb-6">
+                Ne pare rău, a apărut o eroare neașteptată. Echipa noastră tehnică a fost notificată.
+              </p>
+              <button
+                onClick={resetErrorBoundary}
+                className="px-6 py-3 bg-gold-500 text-cosmic-950 font-semibold rounded-lg hover:bg-gold-400 transition-colors"
+              >
+                Reîncarcă pagina
+              </button>
+            </div>
+          </div>
+        )}
+      >
+        <LoadingProvider>
+          <Router>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="/despre-mine" element={<AboutMe />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/servicii" element={<Services />} />
+                {/* Calculators */}
+                <Route
+                  path="/servicii/calculatorul-astral"
+                  element={<AstralCalculator />}
+                />
+                <Route
+                  path="/servicii/calculatorul-fazei-lunare"
+                  element={<MoonPhaseCalculator />}
+                />
+                {/* Astrograms */}
+                <Route
+                  path="/astrograma/lumina-natala-si-karmica"
+                  element={<NatalNKarmicChartBooking />}
+                />
+                <Route
+                  path="/astrograma/lumina-relationala"
+                  element={<SynastryChartBooking />}
+                />
+                <Route
+                  path="/astrograma/lumina-previzionala"
+                  element={<PredictiveChartBooking />}
+                />
+                {/* Products */}
+                <Route path="/produse" element={<Products />} />
+                <Route
+                  path="/produse/ghidul-lui-saturn-in-berbec"
+                  element={<GhidulLuiSaturnInBerbec />}
+                />
+                <Route
+                  path="/produse/soarele-stralucirea-ta"
+                  element={<SoareleStralucireaTa />}
+                />
+                {/* Events */}
+                <Route path="/evenimente" element={<Events />} />
+                <Route
+                  path="/evenimente/rezervare/:id"
+                  element={<ConstellationEvent />}
+                />
+                {/*  */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </LoadingProvider>
+      </Sentry.ErrorBoundary>
     </React.StrictMode>,
   );
 }

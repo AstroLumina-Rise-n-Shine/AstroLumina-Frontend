@@ -83,7 +83,10 @@ const Products = () => {
                       <div className="flex items-center justify-center transition-all duration-500 w-14 h-14 rounded-2xl bg-cosmic-500/20 text-cosmic-400 group-hover:scale-110 group-hover:bg-cosmic-500/30">
                         <Package className="w-6 h-6" />
                       </div>
-                      <Link to={`/produse/${product.id}`} className="text-2xl font-bold text-white transition-colors font-display group-hover:text-gold-300 duration-400">
+                      <Link
+                        to={`/produse/${product.id}`}
+                        className="text-2xl font-bold text-white transition-colors font-display group-hover:text-gold-300 duration-400"
+                      >
                         <h2>{product.title}</h2>
                       </Link>
                     </div>

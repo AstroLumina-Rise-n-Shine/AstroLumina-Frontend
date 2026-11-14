@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,6 +44,10 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ onComplete }) => {
     } catch (err) {
       handleError(err instanceof Error ? err : new Error("Eroare neașteptată"));
     }
+  };
+
+  const handleSuccess = (orderToken: string) => {
+    onComplete(orderToken);
   };
 
   return (
@@ -105,7 +109,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ onComplete }) => {
             amount={product.amount}
             currency={product.currency}
             orderMetadata={{ product: "ghid-saturn-in-berbec" }}
-            onSuccess={onComplete}
+            onSuccess={handleSuccess}
             onError={handleError}
             className="mt-6"
           />
