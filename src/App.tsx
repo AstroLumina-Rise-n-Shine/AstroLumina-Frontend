@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/navbar/Navbar";
-import { Button } from "@/components/ui/button";
 
 import { useLoading } from "@/hooks/useLoading";
 import { CONSTELLATION_EVENTS } from "@/data/events";
@@ -23,7 +22,6 @@ function App() {
     new Set(),
   );
   const { startLoading, stopLoading } = useLoading();
-  const navigate = useNavigate();
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -188,17 +186,7 @@ function App() {
                 </span>
               </p>
 
-              <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-6">
-                <Button variant="luxury" size="lg" className="group relative overflow-hidden" onClick={() => navigate("/servicii")}>
-                  <span className="flex items-center gap-2">
-                    Servicii Astrologice
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Button>
-                <Link to="/produse" data-testid="hero-produse-link" className="inline-flex items-center justify-center rounded-full px-8 py-4 font-semibold text-white border border-white/20 bg-white/5 hover:bg-white/10 transition-all duration-300 group">
-                  Produse
-                </Link>
-              </div>
+              
 
             </div>
           </div>

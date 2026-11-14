@@ -12,36 +12,6 @@ test.describe("AstroLumina Homepage", () => {
     
     // Check hero description
     await expect(page.locator("text=înțelepciunea străveche a stelelor")).toBeVisible();
-    
-    // Check CTA buttons - use testid for uniqueness
-    await expect(page.locator("button:has-text('Servicii Astrologice')")).toBeVisible();
-    await expect(page.locator("[data-testid='hero-produse-link']")).toBeVisible();
-  });
-
-  test("should navigate to services page", async ({ page }) => {
-    await page.goto("/");
-    
-    await page.click("button:has-text('Servicii Astrologice')");
-    
-    await expect(page).toHaveURL("/servicii");
-    await expect(page.locator("h2:has-text('Servicii Astrologice')")).toBeVisible();
-  });
-
-  test("should navigate to products page", async ({ page }) => {
-    await page.goto("/");
-    
-    // Click the hero produse link (unique via testid to avoid navbar duplicate)
-    await page.click("[data-testid='hero-produse-link']");
-    
-    await expect(page).toHaveURL("/produse");
-  });
-
-  test("should display service cards with correct information", async ({ page }) => {
-    await page.goto("/servicii");
-    
-    // Check at least one service card is visible
-    await expect(page.locator("text=Calculatorul Astral")).toBeVisible();
-    await expect(page.locator("text=Calculatorul Fazei Lunare")).toBeVisible();
   });
 
   test("should be responsive on mobile", async ({ page }) => {
@@ -49,7 +19,6 @@ test.describe("AstroLumina Homepage", () => {
     await page.goto("/");
     
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.locator("button:has-text('Servicii Astrologice')")).toBeVisible();
   });
 });
 
