@@ -56,20 +56,49 @@ if (rootElement) {
     <React.StrictMode>
       <Sentry.ErrorBoundary
         fallback={(error, resetErrorBoundary) => (
-          <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="text-center max-w-md">
-              <h1 className="text-2xl font-bold text-cosmic-100 mb-4">
-                Ceva nu a funcționat corect
-              </h1>
-              <p className="text-cosmic-300/70 mb-6">
-                Ne pare rău, a apărut o eroare neașteptată. Echipa noastră tehnică a fost notificată.
-              </p>
-              <button
-                onClick={resetErrorBoundary}
-                className="px-6 py-3 bg-gold-500 text-cosmic-950 font-semibold rounded-lg hover:bg-gold-400 transition-colors"
-              >
-                Reîncarcă pagina
-              </button>
+          <div className="min-h-screen text-white bg-midnight-950 relative overflow-hidden">
+            {/* Background stars and orbs - same as hero section */}
+            <div className="absolute inset-0 stars">
+              <div className="shooting-star"></div>
+              <div className="shooting-star"></div>
+              <div className="shooting-star"></div>
+              <div className="shooting-star"></div>
+              <div className="shooting-star"></div>
+            </div>
+
+            <div className="cosmic-orb cosmic-orb-purple w-[600px] h-[600px] -top-40 -right-40 opacity-25 animate-pulse-soft"></div>
+            <div
+              className="cosmic-orb cosmic-orb-gold w-[400px] h-[400px] bottom-20 -left-40 opacity-20 animate-pulse-soft"
+              style={{ animationDelay: "2s" }}
+            ></div>
+            <div
+              className="cosmic-orb cosmic-orb-purple w-[200px] h-[200px] top-1/3 left-1/4 opacity-15 animate-pulse-soft"
+              style={{ animationDelay: "1s" }}
+            ></div>
+
+            <div className="absolute bottom-0 left-0 w-full h-48 pointer-events-none bg-linear-to-t to-transparent from-midnight-950 via-midnight-950/80"></div>
+
+            {/* Error content */}
+            <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+              <div className="text-center max-w-md">
+                <h1 className="mb-6 text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r font-display md:text-4xl from-white via-cosmic-200 to-cosmic-300">
+                  Ceva nu a funcționat corect
+                </h1>
+                <p className="max-w-xl mx-auto mb-8 text-lg leading-relaxed md:text-xl text-cosmic-100/60 font-display">
+                  Ne pare rău, a apărut o eroare neașteptată. Echipa noastră tehnică a fost notificată.
+                </p>
+                <button
+                  onClick={resetErrorBoundary}
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 font-semibold text-white rounded-full bg-linear-to-r luxury-button group from-cosmic-600 via-cosmic-500 to-cosmic-600 hover:from-cosmic-500 hover:to-cosmic-500 shadow-luxury-purple"
+                >
+                  <span>Reîncarcă pagina</span>
+                  <svg className="w-5 h-5 transition-transform duration-400 group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 4v6h-6" />
+                    <path d="M1 20v-6h6" />
+                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         )}
