@@ -1,0 +1,27 @@
+name: Sentry Diagnose
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sentry-diagnose.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List organizations and projects visible to SENTRY_ORG_TOKEN
+        env:
+          TOKEN: ${{ secrets.SENTRY_ORG_TOKEN }}
+        run: |
+          echo "token_prefix=${TOKEN:0:7}"
+          echo "--- organizations ---"
+          curl -sf -H "Authorization: Bearer $TOKEN" \
+            "https://sentry.io/api/0/organizations/?per_page=100" \
+            | jq -r '.[] | "\(.slug) | \(.name) | \(.status.id)"' || echo "organizations: request failed"
+          echo "--- projects ---"
+          curl -sf -H "Authorization: Bearer $TOKEN" \
+            "https://sentry.io/api/0/projects/?per_page=100" \
+            | jq -r '.[] | "\(.organization.slug)/\(.slug) | \(.name)"' || echo "projects: request failed"
