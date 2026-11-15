@@ -32,6 +32,7 @@ const ENV_VARS = [
   "ASTROLOGY_API_URL",
   "PAYMENT_API_URL",
   "BOOKING_API_URL",
+  "SENTRY_RELEASE",
 ] as const;
 
 function hasEnvVars(): boolean {
@@ -89,8 +90,6 @@ function envJsPlugin(): Plugin {
   FRONTEND_SERVER_PORT: "__FRONTEND_SERVER_PORT__",
   FRONTEND_SENTRY_DSN: "__FRONTEND_SENTRY_DSN__",
   REVOLUT_PAY_PUBLIC_KEY: "__REVOLUT_PAY_PUBLIC_KEY__",
-  REVOLUT_PAY_PUBLIC_KEY: "__REVOLUT_PAY_PUBLIC_KEY__",
-  REVOLUT_PAY_PUBLIC_KEY: "__REVOLUT_PAY_PUBLIC_KEY__",
   R2_BASE_URL: "__R2_BASE_URL__",
   ASTROLOGY_API_SERVER_DC_PORT: "__ASTROLOGY_API_SERVER_DC_PORT__",
   ASTROLOGY_API_SERVER_DC_DNS: "__ASTROLOGY_API_SERVER_DC_DNS__",
@@ -111,6 +110,7 @@ function envJsPlugin(): Plugin {
   ASTROLOGY_API_URL: "__ASTROLOGY_API_URL__",
   PAYMENT_API_URL: "__PAYMENT_API_URL__",
   BOOKING_API_URL: "__BOOKING_API_URL__",
+  SENTRY_RELEASE: "__SENTRY_RELEASE__",
 };
 `;
 
@@ -127,7 +127,10 @@ export default defineConfig({
   build: {
     target: "es2022",
     minify: "oxc",
-    sourcemap: false,
+    // Source maps are emitted only for the release job that uploads them to
+    // Sentry (`SENTRY_SOURCEMAPS=true`). Regular builds and the Cloudflare
+    // Pages deployment must not publish readable sources.
+    sourcemap: process.env.SENTRY_SOURCEMAPS === "true" ? "hidden" : false,
     // Initial bundle is ~170 kB; chunks above the default 500 kB limit are
     // all lazy-loaded on demand (geo dataset, PDF engine, error tracking).
     chunkSizeWarningLimit: 9000,

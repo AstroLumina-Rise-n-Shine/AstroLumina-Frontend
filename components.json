@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "nova",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/starry-theme.css",
+    "baseColor": "purple",
+    "cssVariables": true,
+    "aliases": {
+      "components": "@/components",
+      "utils": "@/lib/utils",
+      "ui": "@/components/ui",
+      "lib": "@/lib",
+      "hooks": "@/hooks"
+    }
+  }
+}

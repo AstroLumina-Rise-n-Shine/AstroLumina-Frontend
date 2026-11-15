@@ -1,0 +1,61 @@
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+  use: {
+    baseURL: "http://localhost:5173",
+    trace: "on-first-retry",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 12"] },
+    },
+  ],
+  webServer: {
+    command: "npm run dev",
+    url: "http://localhost:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+    env: {
+      NODE_ENV: "development",
+      FRONTEND_SERVER_PORT: "5173",
+      FRONTEND_SENTRY_DSN: "https://abc123@o0.ingest.sentry.io/0",
+      REVOLUT_PAY_PUBLIC_KEY: "pk_test_dummy",
+      REVOLUT_PAY_MODE: "sandbox",
+      R2_BASE_URL: "https://r2.test.local",
+      ASTROLOGY_API_SERVER_DC_PORT: "3031",
+      ASTROLOGY_API_SERVER_DC_DNS: "dc.test.local",
+      ASTROLOGY_API_SERVER_K8S_PORT: "3131",
+      ASTROLOGY_API_SERVER_K8S_DNS: "k8s.test.local",
+      BOOKING_API_SERVER_DC_PORT: "3033",
+      BOOKING_API_SERVER_DC_DNS: "dc.test.local",
+      BOOKING_API_SERVER_K8S_PORT: "3133",
+      BOOKING_API_SERVER_K8S_DNS: "k8s.test.local",
+      PAYMENT_API_SERVER_DC_PORT: "3032",
+      PAYMENT_API_SERVER_DC_DNS: "dc.test.local",
+      PAYMENT_API_SERVER_K8S_PORT: "3132",
+      PAYMENT_API_SERVER_K8S_DNS: "k8s.test.local",
+      FRONTEND_SERVER_DC_PORT: "8080",
+      FRONTEND_SERVER_DC_DNS: "dc.test.local",
+      FRONTEND_SERVER_K8S_PORT: "8180",
+      FRONTEND_SERVER_K8S_DNS: "k8s.test.local",
+      ASTROLOGY_API_URL: "https://dc.test.local:3031",
+      PAYMENT_API_URL: "https://dc.test.local:3032",
+      BOOKING_API_URL: "https://dc.test.local:3033",
+    },
+  },
+});
