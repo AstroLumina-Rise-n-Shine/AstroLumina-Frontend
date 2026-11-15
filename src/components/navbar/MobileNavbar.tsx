@@ -7,7 +7,7 @@ import {
 import { getNavbarStyles } from "@/components/navbar/navbarStyles";
 import { Menu, X } from "lucide-react";
 
-const MobileNavbar: React.FC<NavbarProps> = ({ isScrolled }) => {
+const MobileNavbar: React.FC<NavbarProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const { mobileLinkClasses } = getNavbarStyles();

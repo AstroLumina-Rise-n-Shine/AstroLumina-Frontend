@@ -5,7 +5,7 @@ test.describe("Products Page", () => {
     await page.goto("/produse");
     
     await expect(page).toHaveTitle(/AstroLumina/);
-    await expect(page.locator("h2:has-text('Produse')")).toBeVisible();
+    await expect(page.locator("h1:has-text('Produse')")).toBeVisible();
   });
 
   test("should display all product cards", async ({ page }) => {

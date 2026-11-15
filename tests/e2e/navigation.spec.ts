@@ -8,7 +8,7 @@ test.describe("Navigation", () => {
     await page.click("nav a:has-text('Servicii')");
     
     await expect(page).toHaveURL("/servicii");
-    await expect(page.locator("h2:has-text('Servicii Astrologice')")).toBeVisible();
+    await expect(page.locator("h1:has-text('Servicii Astrologice')")).toBeVisible();
   });
 
   test("should navigate from services to specific service", async ({ page }) => {

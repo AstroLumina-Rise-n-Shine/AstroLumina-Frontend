@@ -62,9 +62,9 @@ const Products = () => {
 
         <div className="relative z-10 max-w-6xl px-6 mx-auto">
           <div className="mb-20 text-center">
-            <h2 className="mb-5 text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white font-display md:text-5xl via-cosmic-100 to-cosmic-200">
+            <h1 className="mb-5 text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-white font-display md:text-5xl via-cosmic-100 to-cosmic-200">
               Produse
-            </h2>
+            </h1>
             <p className="max-w-2xl mx-auto text-lg text-cosmic-300/70">
               Ghiduri digitale și rapoarte pentru auto-cunoaștere prin
               astrologie
