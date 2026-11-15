@@ -12,19 +12,17 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe the organization bound to SENTRY_ORG_TOKEN
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: sentry-cli auth and project resolution
         env:
-          TOKEN: ${{ secrets.SENTRY_ORG_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_ORG_TOKEN }}
         run: |
-          API="https://sentry.io/api/0"
-          for p in astrolumina-frontend astrolumina-astrology-api astrolumina-booking-api astrolumina-payments-api frontend astrology-api booking-api payment-api; do
-            code=$(curl -s -o /tmp/p.json -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$API/projects/pirvudanielcatalin/$p/")
-            echo "project:$p -> HTTP $code"
-            if [ "$code" = "200" ]; then jq -r '"  slug=\(.slug) id=\(.id) platform=\(.platform)"' /tmp/p.json; fi
-          done
-          echo "--- projects listed for the org ---"
-          code=$(curl -s -o /tmp/list.json -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$API/organizations/pirvudanielcatalin/projects/?per_page=100")
-          echo "org projects -> HTTP $code"
-          jq -r '.[]? | "\(.slug) | \(.name)"' /tmp/list.json 2>/dev/null || head -c 300 /tmp/list.json
-          echo "--- org teams ---"
-          curl -s -H "Authorization: Bearer $TOKEN" "$API/organizations/pirvudanielcatalin/teams/?per_page=100" | jq -r '.[]? | "\(.slug)"' 2>/dev/null || true
+          set +e
+          echo "=== info ==="
+          npx --yes @sentry/cli@2 info 2>&1 | sed -E 's/(sntrys_|sentry_)[A-Za-z0-9_]+/<redacted>/g' | tail -30
+          echo "=== projects list (token org) ==="
+          npx --yes @sentry/cli@2 projects list --log-level=debug 2>&1 | sed -E 's/(sntrys_|sentry_)[A-Za-z0-9_]+/<redacted>/g' | tail -30
+          echo "=== releases new against astrolumina-frontend ==="
+          npx --yes @sentry/cli@2 releases new v0.0.0-diagnostic -p astrolumina-frontend --log-level=debug 2>&1 | sed -E 's/(sntrys_|sentry_)[A-Za-z0-9_]+/<redacted>/g' | tail -40
