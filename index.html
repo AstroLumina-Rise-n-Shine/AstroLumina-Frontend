@@ -144,7 +144,9 @@
     <div id="root"></div>
     <script src="/env.js"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -- Botpress serves these loader scripts unversioned; the vendor publishes no SRI hash, so integrity cannot be pinned. They are allow-listed in the CSP and loaded over HTTPS only. -->
     <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -- Botpress webchat bundle: content-addressed by the vendor but no published SRI hash. CSP-restricted and HTTPS-only. -->
     <script src="https://files.bpcontent.cloud/2026/11/06/07/20261106073258-8IZ1644O.js" defer></script>
   </body>
 </html>

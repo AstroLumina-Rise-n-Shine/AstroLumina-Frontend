@@ -12,7 +12,7 @@ import RouteFallback from "@/components/RouteFallback";
 import { env, initSentry } from "@/config";
 
 // Initialize Sentry - Error Tracking + Performance + Session Replay + Profiling
-void initSentry(env.FRONTEND_SENTRY_DSN, env.NODE_ENV);
+void initSentry(env.FRONTEND_SENTRY_DSN, env.NODE_ENV, env.SENTRY_RELEASE);
 
 // Route-level code splitting: each page becomes a separate chunk,
 // loaded on demand. Without this, all pages + country-state-city +

@@ -10,6 +10,9 @@ const envSchema = z.object({
     .min(1, "FRONTEND_SERVER_PORT is required"),
 
   FRONTEND_SENTRY_DSN: z.string().min(1, "FRONTEND_SENTRY_DSN is required"),
+  // Set by the image build (baked as ENV) so events carry the same
+  // release identifier the CI job uploads source maps under.
+  SENTRY_RELEASE: z.string().optional(),
 
   REVOLUT_PAY_PUBLIC_KEY: z.string().min(1, "REVOLUT_PAY_PUBLIC_KEY is required"),
   REVOLUT_PAY_MODE: z.enum(["sandbox", "prod"]).default("sandbox"),
@@ -96,7 +99,11 @@ declare global {
   }
 }
 
-export async function initSentry(dsn: string | undefined, environment: string) {
+export async function initSentry(
+  dsn: string | undefined,
+  environment: string,
+  release?: string,
+) {
   if (!dsn) {
     return;
   }
@@ -104,6 +111,7 @@ export async function initSentry(dsn: string | undefined, environment: string) {
   Sentry.init({
     dsn,
     environment,
+    release: release || undefined,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({

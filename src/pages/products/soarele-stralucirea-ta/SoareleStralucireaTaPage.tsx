@@ -84,8 +84,8 @@ const SoareleStralucireaTaPage = () => {
                           step.num === currentStep
                             ? "step-active text-white"
                             : step.num < currentStep
-                            ? "step-completed text-white"
-                            : "step-pending text-cosmic-400"
+                              ? "step-completed text-white"
+                              : "step-pending text-cosmic-400"
                         }`}
                       >
                         {step.num < currentStep ? "✓" : step.num}
@@ -113,8 +113,8 @@ const SoareleStralucireaTaPage = () => {
                           step === currentStep
                             ? "step-active text-white"
                             : step < currentStep
-                            ? "step-completed text-white"
-                            : "step-pending text-cosmic-400"
+                              ? "step-completed text-white"
+                              : "step-pending text-cosmic-400"
                         }`}
                       >
                         {step < currentStep ? "✓" : step}
