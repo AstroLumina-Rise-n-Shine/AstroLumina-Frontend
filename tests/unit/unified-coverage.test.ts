@@ -1,7 +1,10 @@
+// Test setup - configure window.ENV before other imports
+import "./setup-env.js";
+
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { COUNTRY_CODES } from "../src/data/international.js";
-import { CONSTELLATION_EVENTS } from "../src/data/events.js";
+import { COUNTRY_CODES } from "@/data/international.js";
+import { CONSTELLATION_EVENTS } from "@/data/events.js";
 
 describe("unified frontend coverage", () => {
   it("exports country code metadata and known events", () => {

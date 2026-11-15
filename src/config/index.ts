@@ -10,6 +10,9 @@ const envSchema = z.object({
     .min(1, "FRONTEND_SERVER_PORT is required"),
 
   FRONTEND_SENTRY_DSN: z.string().min(1, "FRONTEND_SENTRY_DSN is required"),
+  // Set by the image build (baked as ENV) so events carry the same
+  // release identifier the CI job uploads source maps under.
+  SENTRY_RELEASE: z.string().optional(),
 
   REVOLUT_PAY_PUBLIC_KEY: z.string().min(1, "REVOLUT_PAY_PUBLIC_KEY is required"),
   REVOLUT_PAY_MODE: z.enum(["sandbox", "prod"]).default("sandbox"),
@@ -96,7 +99,11 @@ declare global {
   }
 }
 
-export async function initSentry(dsn: string | undefined, environment: string) {
+export async function initSentry(
+  dsn: string | undefined,
+  environment: string,
+  release?: string,
+) {
   if (!dsn) {
     return;
   }
@@ -104,17 +111,46 @@ export async function initSentry(dsn: string | undefined, environment: string) {
   Sentry.init({
     dsn,
     environment,
+    release: release || undefined,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
+        // Full session replay for Sentry (free tier: 5k/month)
         maskAllText: false,
         blockAllMedia: false,
+        maskAllInputs: false,
       }),
     ],
     tracesSampleRate: environment === "production" ? 0.1 : 1.0,
-    replaysSessionSampleRate: 0.1,
+    profilesSampleRate: environment === "production" ? 0.1 : 1.0,
+    // Session Replay - Sentry free tier: 5k sessions/month
+    replaysSessionSampleRate: environment === "production" ? 0.05 : 0.1,
     replaysOnErrorSampleRate: 1.0,
+    beforeSend(event) {
+      // Don't send events in development
+      if (environment === "development") return null;
+      return event;
+    },
   });
+
+  // Auto-identify user from localStorage if authenticated
+  if (typeof window !== "undefined") {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        Sentry.setUser({
+          id: user.id,
+          email: user.email,
+          username: user.name,
+          plan: user.plan,
+          role: user.role,
+        });
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+  }
 }
 
 function parseAndValidateEnv(): EnvConfig {

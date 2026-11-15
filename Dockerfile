@@ -13,6 +13,11 @@ RUN npm run build
 
 FROM nginx:1.30.6-alpine AS runner
 
+# Release identifier baked per image; docker-entrypoint.sh writes it into
+# env.js so Sentry events match the source maps uploaded by the CI release job.
+ARG SENTRY_RELEASE=""
+ENV SENTRY_RELEASE=${SENTRY_RELEASE}
+
 # The base image ships packages with HIGH CVEs: upgrade just the affected
 # base packages to their fixed releases. Removal is impossible
 # (libgd/nginx link them), and a full `apk upgrade` would make builds
@@ -21,7 +26,11 @@ FROM nginx:1.30.6-alpine AS runner
 # libx11: CVE-2026-88806 (heap overflow via malicious X server), fixed in
 # 1.8.14-r0. brotli-libs: CVE-2026-111497, fixed in 1.2.1-r0.
 # curl: CVE-2026-92392 (HTTP/2 upload Use-After-Free), fixed in 8.23.0-r0.
-RUN apk add --no-cache --upgrade tiff expat pcre2 libx11 brotli-libs curl
+RUN apk add --no-cache --upgrade tiff expat pcre2 libx11 brotli-libs curl libxslt
+
+# libxslt: CVE-2026-125350, CVE-2026-87636, CVE-2026-9947 (XML use-after-free /
+# type confusion), fixed in 1.1.43-r4.
+
 
 RUN mkdir -p \
   /var/cache/nginx/client_temp \

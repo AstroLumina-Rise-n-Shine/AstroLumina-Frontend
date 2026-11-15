@@ -13,7 +13,7 @@ describe("frontend env validation", () => {
     );
     (globalThis as { window?: unknown }).window = { ENV: incomplete };
     await assert.rejects(
-      () => import("../src/config/index.js?validation-missing"),
+      () => import("@/config?validation-missing"),
       /ENV ERROR/,
     );
   });

@@ -9,7 +9,7 @@ const R2_LOGO_URL = R2_BASE_URL + "/logo";
 
 export const NavbarLogo: React.FC = () => (
   <div className="flex items-center shrink-0">
-    <Link to="/" className="flex items-center cursor-pointer group">
+    <Link to="/" className="flex items-center cursor-pointer group" aria-label="AstroLumina">
       <img
         src={`${R2_LOGO_URL}/Banner.png`}
         alt="AstroLumina"

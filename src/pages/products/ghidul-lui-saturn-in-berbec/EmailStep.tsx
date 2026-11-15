@@ -1,29 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { sendGhidulSaturnEmail } from "@/utils/email";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { CheckCircle2, Mail } from "lucide-react";
 
 interface EmailStepProps {
   onBack?: () => void;
 }
 
-const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
+const emailSchema = z.object({
+  email: z.string().email("Te rugăm să introduci o adresă de email validă."),
+});
+
+type EmailForm = z.infer<typeof emailSchema>;
+
+const EmailStep: React.FC<EmailStepProps> = () => {
   const navigate = useNavigate();
-  const [customerEmail, setCustomerEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSend = async () => {
-    if (!customerEmail) {
-      setError("Te rugăm să introduci un email valid.");
-      return;
-    }
+  const form = useForm<EmailForm>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { email: "" },
+  });
 
-    setIsSendingEmail(true);
+  const handleSend = async (data: EmailForm) => {
     setError("");
+    setIsSendingEmail(true);
 
     try {
-      const result = await sendGhidulSaturnEmail(customerEmail);
+      const result = await sendGhidulSaturnEmail(data.email);
       if (result.success) {
         setEmailSent(true);
       } else {
@@ -41,30 +52,35 @@ const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
     return (
       <div className="py-12 text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-emerald-500/20">
-          <span className="text-4xl text-emerald-400">✓</span>
+          <CheckCircle2 className="w-10 h-10 text-emerald-400" />
         </div>
-        <h2 className="mb-4 text-2xl font-bold text-white">
+        <h2 className="mb-4 text-2xl font-bold font-display text-white">
           Ghidul ajunge la tine în câteva minute!
         </h2>
         <p className="mb-8 text-cosmic-300">
           Verifică-ți inbox-ul (și spam-ul) - acolo vei găsi ghidul.
         </p>
-        <button
+        <Button
           onClick={() => navigate("/produse")}
-          className="px-6 py-3 transition-colors border cursor-pointer rounded-xl bg-white/5 text-cosmic-200 hover:bg-white/10 border-white/10"
+          variant="outline"
+          className="px-6 py-3"
         >
           Înapoi la produse
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <form
+      onSubmit={form.handleSubmit(handleSend)}
+      className="space-y-6"
+      noValidate
+    >
       <div className="p-6 border rounded-xl bg-emerald-500/10 border-emerald-500/20">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500/20">
-            <span className="text-xl text-emerald-400">✓</span>
+            <Mail className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
             <p className="font-medium text-emerald-300">
@@ -76,31 +92,42 @@ const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
       </div>
 
       <div>
-        <label className="block mb-2 text-sm text-cosmic-300" htmlFor="email">
+        <label
+          htmlFor="guide-email"
+          className="block mb-2 text-sm text-cosmic-300 font-medium"
+        >
           Email pentru trimitere ghid
         </label>
-        <input
+        <Input
+          id="guide-email"
+          {...form.register("email")}
           type="email"
-          id="email"
-          className="w-full p-3 transition-colors border rounded-xl bg-white/5 border-white/15 text-cosmic-100 placeholder-cosmic-500 focus:outline-hidden focus:border-cosmic-500 focus:ring-1 focus:ring-cosmic-500"
           placeholder="email@exemplu.ro"
-          value={customerEmail}
-          onChange={(e) => setCustomerEmail(e.target.value)}
-          required
+          className="w-full"
+          aria-invalid={form.formState.errors.email ? "true" : "false"}
         />
+        {form.formState.errors.email && (
+          <p className="mt-1 text-sm text-red-400">
+            {form.formState.errors.email.message}
+          </p>
+        )}
       </div>
 
       {error && (
-        <div className="p-3 text-sm text-red-400 border rounded-xl bg-red-500/10 border-red-500/20">
+        <div
+          role="alert"
+          className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-200 text-sm"
+        >
           {error}
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={handleSend}
+      <Button
+        type="submit"
+        variant="luxury"
+        size="lg"
+        className="w-full"
         disabled={isSendingEmail}
-        className="flex items-center justify-center w-full px-6 py-3 font-semibold text-white transition-all duration-300 cursor-pointer bg-linear-to-r rounded-xl from-cosmic-600 to-cosmic-500 hover:from-cosmic-500 hover:to-cosmic-400 shadow-glow-purple disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSendingEmail ? (
           <>
@@ -124,8 +151,8 @@ const EmailStep: React.FC<EmailStepProps> = ({ onBack }) => {
         ) : (
           "Trimite-mi ghidul"
         )}
-      </button>
-    </div>
+      </Button>
+    </form>
   );
 };
 

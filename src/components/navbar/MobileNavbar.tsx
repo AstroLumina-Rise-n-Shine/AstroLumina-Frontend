@@ -3,20 +3,20 @@ import {
   NavbarProps,
   NavbarLogo,
   NavbarLinks,
-} from "@components/navbar/NavbarCommon";
-import { getNavbarStyles } from "@components/navbar/navbarStyles";
+} from "@/components/navbar/NavbarCommon";
+import { getNavbarStyles } from "@/components/navbar/navbarStyles";
 import { Menu, X } from "lucide-react";
 
-const MobileNavbar: React.FC<NavbarProps> = ({ isScrolled }) => {
+const MobileNavbar: React.FC<NavbarProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navbarRef = useRef<HTMLDivElement>(null);
   const { mobileLinkClasses } = getNavbarStyles();
 
   const navClasses =
-    "fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-midnight-950/80 backdrop-blur-xl border-b border-white/5";
+    "fixed top-4 left-[50%] -translate-x-[50%] z-50 w-full max-w-[92%] transition-all duration-500 ease-luxury bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-cosmic";
   const buttonClasses =
-    "inline-flex items-center justify-center p-2 rounded-lg text-cosmic-200 hover:text-white hover:bg-white/10 transition-all cursor-pointer";
-  const mobileMenuClasses = `${isOpen ? "animate-slide-down" : "hidden"} md:hidden bg-midnight-950/95 backdrop-blur-xl border-t border-white/5`;
+    "inline-flex items-center justify-center p-2 rounded-xl text-cosmic-200 hover:text-white hover:bg-white/10 transition-all cursor-pointer";
+  const mobileMenuClasses = `${isOpen ? "animate-slide-down" : "hidden"} md:hidden bg-white/5 backdrop-blur-xl border-t border-white/10 rounded-b-[2rem] py-2`;
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +42,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({ isScrolled }) => {
 
   return (
     <div className="md:hidden">
-      <nav className={`${navClasses} ${isScrolled ? "shadow-lg" : ""}`}>
+      <nav className={navClasses}>
         <div className="px-6 mx-auto max-w-7xl">
           <div className="flex items-center justify-between h-16">
             <NavbarLogo />

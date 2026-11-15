@@ -31,6 +31,7 @@ for file in \
   sed -i "s|__ASTROLOGY_API_URL__|${ASTROLOGY_API_URL}|g" "$file"
   sed -i "s|__PAYMENT_API_URL__|${PAYMENT_API_URL}|g" "$file"
   sed -i "s|__BOOKING_API_URL__|${BOOKING_API_URL}|g" "$file"
+  sed -i "s|__SENTRY_RELEASE__|${SENTRY_RELEASE}|g" "$file"
 done
 
 exec nginx -g "daemon off;"

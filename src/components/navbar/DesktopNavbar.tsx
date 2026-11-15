@@ -11,9 +11,9 @@ const DesktopNavbar: React.FC<NavbarProps> = ({ isScrolled }) => {
 
   return (
     <div className="hidden md:block">
-      <nav className={`${navClasses} ${isScrolled ? "shadow-lg" : ""}`}>
+      <nav className={`${navClasses} ${isScrolled ? "shadow-cosmic" : ""}`}>
         <div className="px-6 mx-auto max-w-7xl">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16">
             <NavbarLogo />
 
             <div className="flex items-center gap-1">

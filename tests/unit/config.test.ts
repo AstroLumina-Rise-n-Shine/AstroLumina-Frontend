@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { DUMMY_ENV } from "./setup-env.js";
 
-const config = await import("../src/config/index.js");
+const config = await import("@/config");
 
 describe("frontend env config", () => {
   it("passes the explicit API base URLs through", () => {
