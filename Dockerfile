@@ -2,7 +2,7 @@
 # AstroLumina Frontend - Dockerfile with Nginx
 # =============================================================================
 
-FROM node:24.22.1-alpine3.24 AS builder
+FROM node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -11,7 +11,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.30.6-alpine AS runner
+FROM nginx:1.30.7-alpine@sha256:caf4e1e032a20f9c3c5e28fc7f25ffd768ad8677b4975c54193075997b3a97e3 AS runner
 
 # Release identifier baked per image; docker-entrypoint.sh writes it into
 # env.js so Sentry events match the source maps uploaded by the CI release job.
@@ -23,13 +23,19 @@ ENV SENTRY_RELEASE=${SENTRY_RELEASE}
 # (libgd/nginx link them), and a full `apk upgrade` would make builds
 # non-deterministic.
 #
-# libx11: CVE-2026-88806 (heap overflow via malicious X server), fixed in
-# 1.8.14-r0. brotli-libs: CVE-2026-111497, fixed in 1.2.1-r0.
-# curl: CVE-2026-92392 (HTTP/2 upload Use-After-Free), fixed in 8.23.0-r0.
+# libx11:   CVE-2026-88806 (heap overflow via malicious X server)
+# tiff:     CVE-2026-4775
+# pcre2:    CVE-2026-103111
+# expat:    CVE-2026-93990 (XML use-after-free)
+# brotli:   CVE-2026-111497
+# curl:     CVE-2026-92392 (HTTP/2 upload Use-After-Free)
+# libxslt:  CVE-2026-125350, CVE-2026-87636, CVE-2026-9947 (XML use-after-free /
+#           type confusion)
+#
+# Trivy's vuln DB knows of fixed releases newer than what `apk upgrade`
+# currently pulls from the Alpine repo. If a CVE persists after the upgrade,
+# it will surface in the docker-scan check and be addressed here.
 RUN apk add --no-cache --upgrade tiff expat pcre2 libx11 brotli-libs curl libxslt
-
-# libxslt: CVE-2026-125350, CVE-2026-87636, CVE-2026-9947 (XML use-after-free /
-# type confusion), fixed in 1.1.43-r4.
 
 
 RUN mkdir -p \
